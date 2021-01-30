@@ -1,0 +1,19 @@
+{
+    "title": "two *s in front of scomparator",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "**dhe"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
