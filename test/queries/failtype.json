@@ -1,0 +1,19 @@
+{
+    "title": "wrong fail type",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_fail": "hi"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

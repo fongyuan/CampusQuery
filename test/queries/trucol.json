@@ -1,0 +1,17 @@
+{
+    "title": "wrong order type",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "math"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                true
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
