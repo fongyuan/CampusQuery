@@ -14,6 +14,7 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
+        let hello: string = "hello";
         return Promise.reject("Not implemented.");
     }
 
