@@ -1,0 +1,18 @@
+{
+    "title": "wrong eq type",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "courses_dept": "epse"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

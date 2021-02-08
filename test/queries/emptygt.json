@@ -1,0 +1,17 @@
+{
+    "title": "wrong gt type",
+    "query": {
+        "WHERE": {
+            "GT": {
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

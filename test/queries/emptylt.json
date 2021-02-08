@@ -1,0 +1,17 @@
+{
+    "title": "wrong lt type",
+    "query": {
+        "WHERE": {
+            "LT": {
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
