@@ -16,11 +16,7 @@ export default class InsightFacade implements IInsightFacade {
         Log.trace("InsightFacadeImpl::init()");
     }
 
-    public addDataset(
-        id: string,
-        content: string,
-        kind: InsightDatasetKind,
-    ): Promise<string[]> {
+    public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         return Promise.reject("Not implemented.");
     }
 

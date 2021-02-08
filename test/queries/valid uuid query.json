@@ -1,0 +1,18 @@
+{
+    "title": "valid uuid query",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_uuid": "8301*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_uuid"
+            ],
+            "ORDER": "courses_uuid"
+        }
+    },
+    "isQueryValid": true,
+    "result":[{"courses_uuid":"8301"},{"courses_uuid":"83010"},{"courses_uuid":"83011"},{"courses_uuid":"83012"},{"courses_uuid":"83013"},{"courses_uuid":"83014"},{"courses_uuid":"83015"},{"courses_uuid":"83016"},{"courses_uuid":"83017"},{"courses_uuid":"83018"},{"courses_uuid":"83019"}]
+}

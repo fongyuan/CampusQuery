@@ -1,0 +1,18 @@
+{
+    "title": "invalid key in IS",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "coursesid": "3*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_id"
+            ],
+            "ORDER": "courses_id"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
