@@ -1,14 +1,22 @@
 import Log from "../Util";
-import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
+import {
+    IInsightFacade,
+    InsightDataset,
+    InsightDatasetKind,
+    InsightError,
+    NotFoundError
+} from "./IInsightFacade";
 import * as JSZip from "jszip";
 import * as fs from "fs-extra";
-
+import Validity from "./Validity";
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
  *
  */
 export default class InsightFacade implements IInsightFacade {
+    private idArray: Promise<string[]>;
+    private promiseArray: string[][];
     constructor() {
         Log.trace("InsightFacadeImpl::init()");
     }
@@ -143,7 +151,10 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public performQuery(query: any): Promise<any[]> {
-        return Promise.reject("Not implemented.");
+        // TO DO: reject multi or not yet added dataset
+        if (!Validity.isValid(query)) {
+            return Promise.reject(new InsightError());
+        }
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
