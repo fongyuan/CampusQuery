@@ -10,9 +10,13 @@ export default class Validity {
     }
 
     public static hasOptions(query: any): boolean {
-        let keys = Object.keys(query);
-        if ("OPTIONS" in keys) {
-            if (query.OPTIONS.length === 0 || query.OPTIONS.COLUMNS.length === 0) {
+        let keys = [];
+        let k;
+        for (k in query) {
+            keys.push(k);
+        }
+        if (keys[1] === "OPTIONS") {
+            if (query.OPTIONS.COLUMNS.length === 0) {
                 return false;
             } else {
                 return true;
@@ -41,24 +45,26 @@ export default class Validity {
         if (query.OPTIONS.ORDER.length > 0) {
             let test = query.OPTIONS.ORDER;
             let splitTest = test.split("_", 1);
-            if (splitId !== splitTest) {
+            if (splitId[0] !== splitTest[0]) {
                 return false;
             }
         }
+
+        let y;
+        y = query.OPTIONS.COLUMNS.valueOf();
 
         let x;
-        for (x in query.OPTIONS.COLUMNS) {
-            let test = x;
+        for (x in y) {
+            let test = y[x];
             let splitTest = test.split("_", 1);
-            if (splitTest !== splitId) {
+            if (splitTest[0] !== splitId[0]) {
                 return false;
             }
         }
-
-        if (query.WHERE.values().length > 0) {
-            let size = query.WHERE.values();
-            let query2 = query.WHERE;
-            return this.recurse(query2, size, splitId);
+        let q = query.WHERE;
+        let size = Object.keys(q).length;
+        if (size > 0) {
+            return this.recurse(q, size, splitId);
         }
 
         return true;
@@ -66,9 +72,10 @@ export default class Validity {
 
     public static recurse(query: any, size: number, splitId: string): boolean {
         if (size === 1) {     // ie GT: {course_avg = 97}
-            let test = query.keys[0];   // course_avg
-            let splitTest = test.split("_", 1);
-            if (splitId !== splitTest) {
+            let test = Object.values(query);
+            let test2 = Object.keys(test[0]);
+            let splitTest = test2[0].split("_", 1);
+            if (splitId[0] !== splitTest[0]) {
                 return false;
             }
         } else {
@@ -82,6 +89,7 @@ export default class Validity {
                 return true;
             }
         }
+        return true;
     }
 
     public static goodKey(query: any): boolean {
