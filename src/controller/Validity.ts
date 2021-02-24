@@ -1,5 +1,8 @@
 export default class Validity {
     public static isValid(query: any): boolean {
+        if (this.hasNothing(query)) {
+            return false;
+        }
         if (!this.hasOptions(query)) {
             return false;
         }
@@ -7,6 +10,19 @@ export default class Validity {
             return false;
         }
         return true;
+    }
+
+    public static hasNothing(query: any): boolean {
+        let keys = [];
+        let k;
+        for (k in query) {
+            keys.push(k);
+        }
+        if (keys.length === 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static hasOptions(query: any): boolean {
@@ -64,14 +80,17 @@ export default class Validity {
         let q = query.WHERE;
         let size = Object.keys(q).length;
         if (size > 0) {
-            return this.recurse(q, size, splitId);
+            return this.recurse(q, splitId, query);
         }
 
         return true;
     }
 
-    public static recurse(query: any, size: number, splitId: string): boolean {
-        if (size === 1) {     // ie GT: {course_avg = 97}
+    public static recurse(query: any, splitId: string, query2: any): boolean {
+        let top = Object.values(query);
+        let med = Object.values(top[0]);
+        let type = typeof med[0];
+        if (type !== "object") {     // ie GT: {course_avg = 97}
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 1);
@@ -79,13 +98,14 @@ export default class Validity {
                 return false;
             }
         } else {
-            if (query.property === "AND" || query.property === "OR") {
+            let op = Object.values(query2);
+            let op2 = op[0];
+            let op3 = Object.keys(op2);
+            if (op3[0] === "AND" || op3[0] === "OR") {
                 let p = query[0];
-                let s = p.WHERE.values().length;
-                let q = query[0];
-                let s2 = q.WHERE.values().length;
-                this.recurse(p, s, splitId);
-                this.recurse(q, s2, splitId);
+                this.recurse(p, splitId, query2);
+                let q = query[1];
+                this.recurse(q, splitId, query2);
                 return true;
             }
         }
