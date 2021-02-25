@@ -98,14 +98,18 @@ export default class Validity {
                 return false;
             }
         } else {
-            let op = Object.values(query2);
-            let op2 = op[0];
-            let op3 = Object.keys(op2);
-            if (op3[0] === "AND" || op3[0] === "OR") {
-                let p = query[0];
-                this.recurse(p, splitId, query2);
-                let q = query[1];
-                this.recurse(q, splitId, query2);
+            let keys = [];
+            let k;
+            for (k in query) {
+                keys.push(k);
+            }
+            if (keys[0] === "AND" || keys[0] === "OR") {
+                let inside = Object.values(query);
+                let test = inside[0];
+                // @ts-ignore
+                this.recurse(test[0], splitId, query2);
+                // @ts-ignore
+                this.recurse(test[1], splitId, query2);
                 return true;
             }
         }
