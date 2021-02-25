@@ -9,6 +9,7 @@ import {
 import * as JSZip from "jszip";
 import * as fs from "fs-extra";
 import Validity from "./Validity";
+import ExecuteQ from "./ExecuteQ";
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
@@ -155,6 +156,7 @@ export default class InsightFacade implements IInsightFacade {
         if (!Validity.isValid(query)) {
             return Promise.reject(new InsightError());
         }
+        return ExecuteQ.execute(query);
     }
 
     public listDatasets(): Promise<InsightDataset[]> {

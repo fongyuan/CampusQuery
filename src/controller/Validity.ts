@@ -223,7 +223,7 @@ export default class Validity {
                         if (h === 0) {
                             let nothing = "b";
                         } else {
-                            if (med2.charAt(h) === "*") {
+                            if (/\*/.test(med2.charAt(h))) {
                                 return false;
                             }
                         }
