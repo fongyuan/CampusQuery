@@ -4,7 +4,7 @@ export default class ExecuteQ {
     private static queryQ: any;
     public static execute(query: any): any {
         let temp: any;
-        let result: any[] = [];
+        let finalResult: any[] = [];
         this.queryQ = query;
         return new Promise((resolve) => {
             fs.readFile("../data/courses", "utf-8", (err, infs) => {
@@ -15,9 +15,9 @@ export default class ExecuteQ {
                 resolve("done");
             });
         }).then(() => {
-            this.filter(query, temp, result);
-            this.columns(query, temp, result);
-            this.sort(query, temp, result);
+            this.filter(query, temp, finalResult);
+            this.columns(query, temp, finalResult);
+            this.sort(query, temp, finalResult);
         });
     }
 
@@ -30,35 +30,66 @@ export default class ExecuteQ {
     }
 
     public static recurseFilter(query: any, query2: any, temp: any, result: any): any {
+        let between: any = [];
         let keys = [];
         let k;
         for (k in query) {
             keys.push(k);
         }
         if (keys[0] === "AND" || keys[0] === "OR") {
-            let nothing;
+            let top = Object.values(query);
+            let med = Object.values(top[0]);
+            let type = typeof med[0];
+
+            if (type === "object") {     // not GT yet
+                let inside = Object.values(query);
+                let testy: any = inside[0];
+                if (keys[0] === "AND") {
+                    return between.push(this.andCombine(this.recurseFilter(testy[0], query2, temp, result),
+                        this.recurseFilter(testy[1], query2, temp, result)));
+                }
+                if (keys[0] === "OR") {
+                    return between.push(this.orCombine(this.recurseFilter(testy[0], query2, temp, result),
+                        this.recurseFilter(testy[1], query2, temp, result)));
+                }
+                }
         } else {
             let inside = Object.values(query);
             let idKey = Object.keys(inside[0]);
             let field = Object.values(inside[0]);
             if (keys[0] === "GT") {
-                this.greater(temp, idKey[0], field[0], result);
+                return this.greater(temp, idKey[0], field[0], result);
             }
             if (keys[0] === "LT") {
-                this.lessThan(temp, idKey[0], field[0], result);
+                return this.lessThan(temp, idKey[0], field[0], result);
             }
             if (keys[0] === "EQ") {
-                this.equalTo(temp, idKey[0], field[0], result);
+                return this.equalTo(temp, idKey[0], field[0], result);
             }
             if (keys[0] === "IS") {
-                this.sCompare(temp, idKey[0], field[0], result);
+                return this.sCompare(temp, idKey[0], field[0], result);
             }
             }
+        let p;
+        for (p in between) {
+            result.push(p);
         }
+        return result;
+        let a;
+        }
+
+    public static andCombine(arr1: any, arr2: any): any {
+        return arr1.filter((value: any) => arr2.includes(value));
+    }
+
+    public static orCombine(arr1: any, arr2: any): any {
+        //
+    }
 
     public static greater(temp: any, idKey: string, field: any, result: any): any {
         let a: string | number;
         let toAdd: any = [];
+        let small: any = [];
         for (a in temp) {
             let obj = temp[a];   // {}
             Object.keys(obj).forEach(function (key) {
@@ -73,13 +104,15 @@ export default class ExecuteQ {
         for (d = 0; d < toAdd.length; d++) {
             let add = toAdd[d];
             let add2 = temp[add];
-            result.push(add2);
+            small.push(add2);
         }
+        return small;
     }
 
     public static lessThan(temp: any, idKey: string, field: any, result: any): any {
         let a: string | number;
         let toAdd: any = [];
+        let small: any = [];
         for (a in temp) {
             let obj = temp[a];   // {}
             Object.keys(obj).forEach(function (key) {
@@ -94,13 +127,15 @@ export default class ExecuteQ {
         for (d = 0; d < toAdd.length; d++) {
             let add = toAdd[d];
             let add2 = temp[add];
-            result.push(add2);
+            small.push(add2);
         }
+        return small;
     }
 
     public static equalTo(temp: any, idKey: string, field: any, result: any): any {
         let a: string | number;
         let toAdd: any = [];
+        let small: any = [];
         for (a in temp) {
             let obj = temp[a];   // {}
             Object.keys(obj).forEach(function (key) {
@@ -115,13 +150,15 @@ export default class ExecuteQ {
         for (d = 0; d < toAdd.length; d++) {
             let add = toAdd[d];
             let add2 = temp[add];
-            result.push(add2);
+            small.push(add2);
         }
+        return small;
     }
 
     public static sCompare(temp: any, idKey: string, field: any, result: any): any {
         let a: string | number;
         let toAdd: any = [];
+        let small: any = [];
         for (a in temp) {
             let obj = temp[a];   // {}
             Object.keys(obj).forEach(function (key) {
@@ -136,8 +173,9 @@ export default class ExecuteQ {
         for (d = 0; d < toAdd.length; d++) {
             let add = toAdd[d];
             let add2 = temp[add];
-            result.push(add2);
+            small.push(add2);
         }
+        return small;
     }
 
     public static columns(query: any, temp: any, result: any): any {
