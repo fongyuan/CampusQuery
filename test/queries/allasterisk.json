@@ -1,0 +1,18 @@
+{
+    "title": "all asterisk in inputstring",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "***"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

@@ -1,0 +1,17 @@
+{
+    "title": "wrong year type",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_year": null
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

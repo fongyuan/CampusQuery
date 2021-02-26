@@ -1,0 +1,20 @@
+{
+    "title": "too many keys lt",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "epse",
+                "courses_id": "683"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

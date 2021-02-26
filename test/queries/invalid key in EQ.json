@@ -1,0 +1,18 @@
+{
+    "title": "invalid key in EQ",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "coursesyear": 2016
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_year"
+            ],
+            "ORDER": "courses_year"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

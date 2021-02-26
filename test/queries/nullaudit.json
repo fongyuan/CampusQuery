@@ -1,0 +1,19 @@
+{
+    "title": "wrong audit type",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_audit": null
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_dept",
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

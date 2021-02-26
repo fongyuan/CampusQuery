@@ -1,0 +1,19 @@
+{
+    "title": "Uses a number at order",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": 4
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
+

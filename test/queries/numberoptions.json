@@ -1,0 +1,16 @@
+{
+    "title": "num for col",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 97
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS":
+                [4]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}
