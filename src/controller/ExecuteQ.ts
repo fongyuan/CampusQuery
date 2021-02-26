@@ -39,7 +39,18 @@ export default class ExecuteQ {
             let inside = Object.values(query);
             let idKey = Object.keys(inside[0]);
             let field = Object.values(inside[0]);
-            this.greater(temp, idKey[0], field[0], result);
+            if (keys[0] === "GT") {
+                this.greater(temp, idKey[0], field[0], result);
+            }
+            if (keys[0] === "LT") {
+                this.lessThan(temp, idKey[0], field[0], result);
+            }
+            if (keys[0] === "EQ") {
+                this.equalTo(temp, idKey[0], field[0], result);
+            }
+            if (keys[0] === "IS") {
+                this.sCompare(temp, idKey[0], field[0], result);
+            }
             }
         }
 
@@ -64,20 +75,69 @@ export default class ExecuteQ {
         }
     }
 
-    //
-    // public static sCompare(temp: any, op3: string, keyN: string, field: any) {
-    //         let a;
-    //         for (a in temp) {
-    //             let obj = temp[a];   // {}
-    //             let combo: any = obj + /\./ + keyN;
-    //             if (combo === field) {
-    //                 let nothing;
-    //             } else {
-    //                 delete temp[a];
-    //             }
-    //         }
-    //     }
-    //
+    public static lessThan(temp: any, idKey: string, field: any, result: any): any {
+        let a: string | number;
+        let toAdd: any = [];
+        for (a in temp) {
+            let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key] < field) {
+                        toAdd.push(a);
+                    }
+                }
+            });
+        }
+        let d;
+        for (d = 0; d < toAdd.length; d++) {
+            let add = toAdd[d];
+            let add2 = temp[add];
+            result.push(add2);
+        }
+    }
+
+    public static equalTo(temp: any, idKey: string, field: any, result: any): any {
+        let a: string | number;
+        let toAdd: any = [];
+        for (a in temp) {
+            let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key] === field) {
+                        toAdd.push(a);
+                    }
+                }
+            });
+        }
+        let d;
+        for (d = 0; d < toAdd.length; d++) {
+            let add = toAdd[d];
+            let add2 = temp[add];
+            result.push(add2);
+        }
+    }
+
+    public static sCompare(temp: any, idKey: string, field: any, result: any): any {
+        let a: string | number;
+        let toAdd: any = [];
+        for (a in temp) {
+            let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key] === field) {
+                        toAdd.push(a);
+                    }
+                }
+            });
+        }
+        let d;
+        for (d = 0; d < toAdd.length; d++) {
+            let add = toAdd[d];
+            let add2 = temp[add];
+            result.push(add2);
+        }
+    }
+
     public static columns(query: any, temp: any, result: any): any {
         let d = query.OPTIONS.COLUMNS.valueOf();
         let a: string | number;
@@ -98,7 +158,30 @@ export default class ExecuteQ {
     }
 
     public static sort(query: any, temp: any, result: any): any {
-        temp.sort();
+    //    let n2 = query.OPTIONS.valueOf();
+        if (query.OPTIONS.ORDER.length > 0) {
+            let test = query.OPTIONS.ORDER;
+            let splitTest = test.split("_", 1);
+            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "instructor" ||
+                splitTest[1] === "title" || splitTest[1] === "uuid") {
+                result.sort();
+            } else {
+                result.sort();
+                // result.sort(this.numSort(n2, n, m));
+            }
+        } else {
+            result.sort();
+        }
     }
+
+    // public static numSort(n2: any, n: number, m: number) {
+    //     if (n === m) {
+    //         return 0;
+    //     } else {
+    //         return n < m ? -1 : 1;
+    //     }
+    // }
+
 }
+
 
