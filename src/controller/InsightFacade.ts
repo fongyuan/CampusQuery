@@ -35,7 +35,37 @@ export default class InsightFacade implements IInsightFacade {
         return true;
     }
 
-    // eslint-disable-next-line @typescript-eslint/tslint/config
+    private createCourse(id: string, course: any): any {
+        let dept = id + "_dept";
+        let cid = id + "_id";
+        let avg = id + "_avg";
+        let instructor = id + "_instructor";
+        let title = id + "_title";
+        let pass = id + "_pass";
+        let fail = id + "_fail";
+        let audit = id + "_audit";
+        let uuid = id + "_uuid";
+        let year = id + "_year";
+        let section = id + "_section";
+        let out: any = {};
+        out[dept] = course["Subject"];
+        out[cid] = course["Course"];
+        out[avg] = course["Avg"];
+        out[instructor] = course["Professor"];
+        out[title] = course["Title"];
+        out[pass] = course["Pass"];
+        out[fail] = course["Fail"];
+        out[audit] = course["Audit"];
+        out[uuid] = course["id"];
+        if (course["Section"] === "overall") {
+            out[year] = 1990;
+        } else {
+            out[year] = course["Year"];
+        }
+        out[section] = course["Section"];
+        return out;
+    }
+
     public addDataset(id: string, content: string, kind: InsightDatasetKind): Promise<string[]> {
         let zip = new JSZip();
         let courseOut: any[] = [];
@@ -50,28 +80,16 @@ export default class InsightFacade implements IInsightFacade {
         if (!this.idValidation(id)) {
             return Promise.reject(new InsightError());
         }
-        // eslint-disable-next-line @typescript-eslint/tslint/config
         return zip.loadAsync(content, {base64: true}).then(() => {
             if (zip.folder(/courses/).length === 0) {
                 return Promise.reject(new InsightError());
             }
             let list: any[] = [];
-            zip.folder("courses").forEach(function (relativepath: string, file: any) {
+            zip.folder("courses").forEach((relativepath: string, file: any) => {
                 let inCourse = file.async("string");
                 list.push(inCourse);
             });
-            Promise.all(list).then(function (data: any) {
-                let dept = id + "_dept";
-                let cid = id + "_id";
-                let avg = id + "_avg";
-                let instructor = id + "_instructor";
-                let title = id + "_title";
-                let pass = id + "_pass";
-                let fail = id + "_fail";
-                let audit = id + "_audit";
-                let uuid = id + "_uuid";
-                let year = id + "_year";
-                let section = id + "_section";
+            Promise.all(list).then((data: any) => {
                 for (let i = 0; i < list.length; i++) {
                     let currCourse = JSON.parse(data[i]);
                     let sections = currCourse["result"];
@@ -79,31 +97,14 @@ export default class InsightFacade implements IInsightFacade {
                         continue;
                     }
                     for (const each of sections) {
-                        let out: any = {};
-                        out[dept] = each["Subject"];
-                        out[cid] = each["Course"];
-                        out[avg] = each["Avg"];
-                        out[instructor] = each["Professor"];
-                        out[title] = each["Title"];
-                        out[pass] = each["Pass"];
-                        out[fail] = each["Fail"];
-                        out[audit] = each["Audit"];
-                        out[uuid] = each["id"];
-                        if (each["Section"] === "overall") {
-                            out[year] = 1990;
-                        } else {
-                            out[year] = each["Year"];
-                        }
-                        out[section] = each["Section"];
-                        courseOut.push(out);
+                        courseOut.push(this.createCourse(id, each));
                     }
                 }
                 let output = JSON.stringify(courseOut);
                 let path = "./data/" + id;
                 fs.writeFile(path, output, (err: any) => {
                     if (err) {
-                        // eslint-disable-next-line no-console
-                        console.log(err);
+                        throw err;
                     }
                 });
             });
