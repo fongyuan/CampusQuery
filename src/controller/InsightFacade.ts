@@ -1,11 +1,7 @@
 import Log from "../Util";
-import {
-    IInsightFacade,
-    InsightDataset,
-    InsightDatasetKind,
-} from "./IInsightFacade";
-import { InsightError, NotFoundError } from "./IInsightFacade";
+import {IInsightFacade, InsightDataset, InsightDatasetKind, InsightError, NotFoundError} from "./IInsightFacade";
 import * as JSZip from "jszip";
+import * as fs from "fs-extra";
 
 /**
  * This is the main programmatic entry point for the project.
@@ -72,7 +68,7 @@ export default class InsightFacade implements IInsightFacade {
         if (kind !== InsightDatasetKind.Courses) {
             return Promise.reject(new InsightError());
         }
-        let fs = require("fs");
+        // let fs = require("fs");
         let files = fs.readdirSync("./data");
         if (files.includes(id)) {
             return Promise.reject(new InsightError());
@@ -82,9 +78,9 @@ export default class InsightFacade implements IInsightFacade {
         }
         return new Promise((resolve, reject) => {
             zip.loadAsync(content, {base64: true}).then(() => {
-                if (zip.folder(/courses/).length === 0) {
-                    reject(new InsightError());
-                }
+                // if (zip.folder(/courses/).length === 0) {
+                //     reject(new InsightError());
+                // }
                 let list: any[] = [];
                 zip.folder("courses").forEach((relativepath: string, file: any) => {
                     let inCourse = file.async("string");
@@ -136,6 +132,23 @@ export default class InsightFacade implements IInsightFacade {
     }
 
     public listDatasets(): Promise<InsightDataset[]> {
-        return Promise.reject("Not implemented.");
+        // let fs = require("fs");
+        let files = fs.readdirSync("./data");
+        let list: any[] = [];
+        let out: InsightDataset[] = [];
+        return new Promise((resolve, reject) => {
+            for (const each of files) {
+                let path = "./data/" + each;
+                let infs = fs.readFileSync(path, "utf-8");
+                let temp = JSON.parse(infs.toString());
+                list.push(temp);
+                let insightOut: InsightDataset = {id: "", numRows: 0, kind: InsightDatasetKind.Courses};
+                insightOut.id = each;
+                insightOut.numRows = temp.length;
+                out.push(insightOut);
+            }
+            resolve(out);
+        });
+        // return Promise.reject("Not implemented.");
     }
 }

@@ -6,6 +6,7 @@ import {
     InsightDataset,
     InsightDatasetKind,
     InsightError,
+    NotFoundError as InsightNotFoundError,
 } from "../src/controller/IInsightFacade";
 import InsightFacade from "../src/controller/InsightFacade";
 import Log from "../src/Util";
@@ -269,7 +270,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     it("Should reject to remove dataset because it has not been added yet", function () {
         const id: string = "courses";
         const futureResult: Promise<string> = insightFacade.removeDataset(id);
-        return expect(futureResult).to.be.rejectedWith(NotFoundError);
+        return expect(futureResult).to.be.rejectedWith(InsightNotFoundError);
     });
 
     // fails to remove a dataset because invalid id (whitespace only)
@@ -312,11 +313,11 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         return expect(futureResult)
             .to.eventually.deep.equal(expected)
             .then(() => {
-                const expected2: InsightDataset = {
+                const expected2: InsightDataset[] = [{
                     id: "courses",
                     kind: InsightDatasetKind.Courses,
                     numRows: 64612,
-                };
+                }];
                 const futureResult2: Promise<
                     InsightDataset[]
                 > = insightFacade.listDatasets();
@@ -348,7 +349,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
             .to.eventually.deep.equal(expected)
             .then(() => {
                 let id2: string = "justOneSection";
-                const expected2: string[] = [id2, id];
+                const expected2: string[] = [id, id2];
                 let futureResult2: Promise<string[]> = insightFacade.addDataset(
                     id2,
                     datasets[id2],
@@ -357,18 +358,19 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                 return expect(futureResult2)
                     .to.eventually.deep.equal(expected2)
                     .then(() => {
-                        const expected3: InsightDataset[] = [
-                            {
-                                id: "courses",
-                                kind: InsightDatasetKind.Courses,
-                                numRows: 64612,
-                            },
-                            {
-                                id: "justOneSection",
-                                kind: InsightDatasetKind.Courses,
-                                numRows: 1,
-                            },
-                        ];
+                        const expected3: InsightDataset[] = [];
+                        let out1: InsightDataset = {
+                            id: "courses",
+                            kind: InsightDatasetKind.Courses,
+                            numRows: 64612,
+                        };
+                        let out2: InsightDataset = {
+                            id: "justOneSection",
+                            kind: InsightDatasetKind.Courses,
+                            numRows: 1,
+                        };
+                        expected3.push(out1);
+                        expected3.push(out2);
                         const futureResult3: Promise<
                             InsightDataset[]
                         > = insightFacade.listDatasets();
