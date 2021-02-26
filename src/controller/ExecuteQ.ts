@@ -1,9 +1,11 @@
 import * as fs from "fs";
 
 export default class ExecuteQ {
+    private static queryQ: any;
     public static execute(query: any): any {
         let temp: any;
         let result: any[] = [];
+        this.queryQ = query;
         return new Promise((resolve) => {
             fs.readFile("../data/courses", "utf-8", (err, infs) => {
                 if (err) {
@@ -158,29 +160,31 @@ export default class ExecuteQ {
     }
 
     public static sort(query: any, temp: any, result: any): any {
-    //    let n2 = query.OPTIONS.valueOf();
         if (query.OPTIONS.ORDER.length > 0) {
-            let test = query.OPTIONS.ORDER;
-            let splitTest = test.split("_", 1);
+            const test1 = query.OPTIONS.ORDER;
+            let splitTest = test1.split("_", 2);
             if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "instructor" ||
                 splitTest[1] === "title" || splitTest[1] === "uuid") {
-                result.sort();
+                result.sort(this.numSort);
             } else {
-                result.sort();
-                // result.sort(this.numSort(n2, n, m));
+                result.sort(this.numSort);
             }
         } else {
             result.sort();
         }
     }
 
-    // public static numSort(n2: any, n: number, m: number) {
-    //     if (n === m) {
-    //         return 0;
-    //     } else {
-    //         return n < m ? -1 : 1;
-    //     }
-    // }
+    public static numSort(n: any, m: any) {
+        let qq = ExecuteQ.queryQ;
+        let qq2 = qq.OPTIONS.ORDER;
+        let n2 = n[qq2];
+        let m2 = m[qq2];
+        if (n2 === m2) {
+            return 0;
+        } else {
+            return n2 < m2 ? -1 : 1;
+        }
+    }
 
 }
 
