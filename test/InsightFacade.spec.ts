@@ -69,6 +69,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
 
     after(function () {
         Log.test(`After: ${this.test.parent.title}`);
+
     });
 
     afterEach(function () {
@@ -209,7 +210,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
 
     // rejects because dataset has no JSON files, only text files
     it("Should reject because dataset has no JSON files, only text files", function () {
-        const id: string = "onlyText";
+        const id: string = "textOnly";
         const futureResult: Promise<string[]> = insightFacade.addDataset(
             id,
             datasets[id],

@@ -80,38 +80,51 @@ export default class InsightFacade implements IInsightFacade {
         if (!this.idValidation(id)) {
             return Promise.reject(new InsightError());
         }
-        return zip.loadAsync(content, {base64: true}).then(() => {
-            if (zip.folder(/courses/).length === 0) {
-                return Promise.reject(new InsightError());
-            }
-            let list: any[] = [];
-            zip.folder("courses").forEach((relativepath: string, file: any) => {
-                let inCourse = file.async("string");
-                list.push(inCourse);
-            });
-            Promise.all(list).then((data: any) => {
-                for (let i = 0; i < list.length; i++) {
-                    let currCourse = JSON.parse(data[i]);
-                    let sections = currCourse["result"];
-                    if (sections.length <= 0) {
-                        continue;
-                    }
-                    for (const each of sections) {
-                        courseOut.push(this.createCourse(id, each));
-                    }
+        return new Promise((resolve, reject) => {
+            zip.loadAsync(content, {base64: true}).then(() => {
+                if (zip.folder(/courses/).length === 0) {
+                    reject(new InsightError());
                 }
-                let output = JSON.stringify(courseOut);
-                let path = "./data/" + id;
-                fs.writeFile(path, output, (err: any) => {
-                    if (err) {
-                        throw err;
+                let list: any[] = [];
+                zip.folder("courses").forEach((relativepath: string, file: any) => {
+                    let inCourse = file.async("string");
+                    list.push(inCourse);
+                });
+                Promise.all(list).then((data: any) => {
+                    if (list.length <= 0) {
+                        reject(new InsightError());
                     }
+                    this.parse(list, data, courseOut, id);
+                    if (courseOut.length <= 0) {
+                        reject(new InsightError());
+                    }
+                    let output = JSON.stringify(courseOut);
+                    let path = "./data/" + id;
+                    fs.writeFileSync(path, output);
+                    files.push(id);
+                    resolve(files);
                 });
             });
-            files.push(id);
-            return Promise.resolve(files);
         });
         // return Promise.reject("Not implemented.");
+    }
+
+    private parse(list: any[], data: any, courseOut: any[], id: string) {
+        for (let i = 0; i < list.length; i++) {
+            let currCourse;
+            try {
+                currCourse = JSON.parse(data[i]);
+            } catch (e) {
+                continue;
+            }
+            let sections = currCourse["result"];
+            if (sections.length <= 0) {
+                continue;
+            }
+            for (const each of sections) {
+                courseOut.push(this.createCourse(id, each));
+            }
+        }
     }
 
     public removeDataset(id: string): Promise<string> {
