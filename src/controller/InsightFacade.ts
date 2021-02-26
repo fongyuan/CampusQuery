@@ -127,10 +127,10 @@ export default class InsightFacade implements IInsightFacade {
         if (!this.idValidation(id)) {
             return Promise.reject(new InsightError());
         }
-        let fs = require("fs");
+        // let fs = require("fs");
         let files = fs.readdirSync("./data");
         if (!files.includes(id)) {
-            return Promise.reject(NotFoundError);
+            return Promise.reject(new NotFoundError());
         }
         let path = "./data/" + id;
         try {
