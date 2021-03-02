@@ -75,6 +75,9 @@ export default class ExecuteQ {
             if (keys[0] === "IS") {
                 return this.sCompare(temp, idKey[0], field[0], result);
             }
+            if (keys[0] === "NOT") {
+                return this.negate(temp, this.recurseFilter(inside[0], query2, temp, result));
+            }
         }
     }
 
@@ -134,9 +137,75 @@ export default class ExecuteQ {
     }
 
     public static sCompare(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any = [];
+        let s = this;
+        let first = field.charAt(0);
+        let last = field.charAt(field.length - 1);
+        if (/\*/.test(first) && !(/\*/.test(last))) {
+            let newField = field.substring(1, field.length);
+            return s.endsWith(temp, idKey, newField, result);
+        }
+        if (!(/\*/.test(first)) && /\*/.test(last)) {
+            let newField = field.substring(0, field.length - 1);
+            return s.startsWith(temp, idKey, newField, result);
+        }
+        if (/\*/.test(first) && /\*/.test(first)) {
+            let newField = field.substring(1, field.length - 1);
+            return s.containsIt(temp, idKey, newField, result);
+        }
+        if (first !== /\*/ && last !== /\*/) {
+            return s.noWild(temp, idKey, field, result);
+        }
+    }
+
+    public static endsWith(temp: any, idKey: string, field: any, result: any): any[] {
+        let toAdd: any[] = [];
         for (const a in temp) {
             let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key].endsWith(field)) {
+                        toAdd.push(obj);
+                    }
+                }
+            });
+        }
+        return toAdd;
+    }
+
+    public static startsWith(temp: any, idKey: string, field: any, result: any): any[] {
+        let toAdd: any[] = [];
+        for (const a in temp) {
+            let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key].startsWith(field)) {
+                        toAdd.push(obj);
+                    }
+                }
+            });
+        }
+        return toAdd;
+    }
+
+    public static containsIt(temp: any, idKey: string, field: any, result: any): any[] {
+        let toAdd: any[] = [];
+        for (const a in temp) {
+            let obj = temp[a];   // {}
+            Object.keys(obj).forEach(function (key) {
+                if (key === idKey) {
+                    if (obj[key].includes(field)) {
+                        toAdd.push(obj);
+                    }
+                }
+            });
+        }
+        return toAdd;
+    }
+
+    public static noWild(temp: any, idKey: string, field: any, result: any): any[] {
+        let toAdd: any[] = [];
+        for (const a in temp) {
+            let obj = temp[a];
             Object.keys(obj).forEach(function (key) {
                 if (key === idKey) {
                     if (obj[key] === field) {
@@ -146,6 +215,11 @@ export default class ExecuteQ {
             });
         }
         return toAdd;
+    }
+
+    public static negate(temp: any, array: any[]): any[] {
+        const testC = temp.filter((value: any) => !array.includes(value));
+        return testC;
     }
 
     public static columns(query: any, temp: any, result: any): any[] {

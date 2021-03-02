@@ -233,15 +233,15 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     });
 
     // rejects because it is a text file not a zip file
-/*    it("Should reject because it is a text file not a zip file", function () {
-        const id: string = "notZip";
-        const futureResult: Promise<string[]> = insightFacade.addDataset(
-            id,
-            datasets[id],
-            InsightDatasetKind.Courses,
-        );
-        return expect(futureResult).to.be.rejectedWith(InsightError);
-    });*/
+    /*    it("Should reject because it is a text file not a zip file", function () {
+            const id: string = "notZip";
+            const futureResult: Promise<string[]> = insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+            return expect(futureResult).to.be.rejectedWith(InsightError);
+        });*/
 
     // successfully removes a dataset
     it("Should remove a valid dataset", function () {
@@ -259,7 +259,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                 const expected2: string = "courses";
                 const futureResult2: Promise<
                     string
-                > = insightFacade.removeDataset(id);
+                    > = insightFacade.removeDataset(id);
                 return expect(futureResult2).to.eventually.deep.equal(
                     expected2,
                 );
@@ -320,7 +320,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                 }];
                 const futureResult2: Promise<
                     InsightDataset[]
-                > = insightFacade.listDatasets();
+                    > = insightFacade.listDatasets();
                 return expect(futureResult2).to.eventually.deep.equal(
                     expected2,
                 );
@@ -332,7 +332,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         const expected: InsightDataset[] = [];
         const futureResult: Promise<
             InsightDataset[]
-        > = insightFacade.listDatasets();
+            > = insightFacade.listDatasets();
         return expect(futureResult).to.eventually.deep.equal(expected);
     });
 
@@ -373,7 +373,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                         expected3.push(out2);
                         const futureResult3: Promise<
                             InsightDataset[]
-                        > = insightFacade.listDatasets();
+                            > = insightFacade.listDatasets();
                         return expect(futureResult3).to.eventually.deep.equal(
                             expected3,
                         );
@@ -426,15 +426,13 @@ describe("InsightFacade PerformQuery", () => {
                 insightFacade.addDataset(id, data, ds.kind),
             );
         }
-        return Promise.all(loadDatasetPromises);
-
-            // .catch((err) => {
+        return Promise.all(loadDatasetPromises).catch((err) => {
             /* *IMPORTANT NOTE: This catch is to let this run even without the implemented addDataset,
              * for the purposes of seeing all your tests run.
              * TODO For C1, remove this catch block (but keep the Promise.all)
              */
-            // return Promise.resolve("HACK TO LET QUERIES RUN");
-        // });
+            return Promise.resolve("HACK TO LET QUERIES RUN");
+        });
     });
 
     beforeEach(function () {
@@ -457,7 +455,7 @@ describe("InsightFacade PerformQuery", () => {
                 it(`[${test.filename}] ${test.title}`, function () {
                     const futureResult: Promise<
                         any[]
-                    > = insightFacade.performQuery(test.query);
+                        > = insightFacade.performQuery(test.query);
                     return TestUtil.verifyQueryResult(futureResult, test);
                 });
             }
