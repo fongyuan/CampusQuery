@@ -1,9 +1,9 @@
 {
-    "title": "order type not in col",
+    "title": "null in GTr",
     "query": {
         "WHERE": {
             "GT": {
-                "courses_avg": 97
+                "courses_avg": null
             }
         },
         "OPTIONS": {
@@ -11,7 +11,7 @@
                 "courses_dept",
                 "courses_avg"
             ],
-            "ORDER": "courses_year"
+            "ORDER": "courses_avg"
         }
     },
     "isQueryValid": false,

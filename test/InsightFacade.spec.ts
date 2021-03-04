@@ -336,6 +336,46 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         return expect(futureResult).to.eventually.deep.equal(expected);
     });
 
+    // it("Check query", function () {
+    //     let query = {
+    //         WHERE: {
+    //             OR: [
+    //                 {
+    //                     AND: [
+    //                         {
+    //                             GT: {
+    //                                 courses_avg: 90
+    //                             }
+    //                         },
+    //                         {
+    //                             IS: {
+    //                                 courses_dept: "adhe"
+    //                             }
+    //                         }
+    //                     ]
+    //                 },
+    //                 {
+    //                     EQ: {
+    //                         courses_avg: 95
+    //                     }
+    //                 }
+    //             ]
+    //         },
+    //         OPTIONS: {
+    //             COLUMNS: [
+    //                 "courses_dept",
+    //                 "courses_id",
+    //                 "courses_avg"
+    //             ],
+    //             ORDER: "courses_avg"
+    //         }
+    //     };
+    //     const futureResult: Promise<
+    //         InsightDataset[]
+    //         > = insightFacade.performQuery(query);
+    //     return expect(futureResult).to.eventually.deep.equal(" ");
+    // });
+
     // lists two datasets
     it("Should list two valid datasets", function () {
         let id: string = "courses";
