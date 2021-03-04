@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import {resolve as pathResolve} from "path";
 
 export default class ExecuteQ {
     private static queryQ: any;
@@ -8,7 +9,7 @@ export default class ExecuteQ {
         let finalResult: any[] = [];
         this.queryQ = query;
         return new Promise((resolve) => {
-            fs.readFile("../data/courses", "utf-8", (err, infs) => {
+            fs.readFile(pathResolve(__dirname, "../../data/courses"), "utf-8", (err, infs) => {
                 if (err) {
                     throw err;
                 }

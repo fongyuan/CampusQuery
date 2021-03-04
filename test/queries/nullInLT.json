@@ -1,17 +1,17 @@
 {
-    "title": "Dataset hasn't been added",
+    "title": "null in LT",
     "query": {
         "WHERE": {
-            "GT": {
-                "missing_avg": 97
+            "LT": {
+                "courses_avg": null
             }
         },
         "OPTIONS": {
             "COLUMNS": [
-                "missing_dept",
-                "missing_avg"
+                "courses_dept",
+                "courses_avg"
             ],
-            "ORDER": "missing_avg"
+            "ORDER": "courses_avg"
         }
     },
     "isQueryValid": false,
