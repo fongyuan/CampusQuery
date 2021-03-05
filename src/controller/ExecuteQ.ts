@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import {resolve as pathResolve} from "path";
+import {ResultTooLargeError} from "./IInsightFacade";
 
 export default class ExecuteQ {
     private static queryQ: any;
@@ -18,6 +19,9 @@ export default class ExecuteQ {
             });
         }).then(() => {
             const variable: any[] = this.filter(query, temp, finalResult);
+            if (variable.length > 5000) {
+                throw new ResultTooLargeError();
+            }
             const variable2: any[] = this.columns(query, temp, variable);
             const var3: any[] = this.sort(query, temp, variable2);
             return var3;
@@ -28,6 +32,9 @@ export default class ExecuteQ {
         let s = this;
         let q = query.WHERE;
         let size = Object.keys(q).length;
+        if (size === 0) {
+            return temp;
+        }
         if (size > 0) {
             const test = s.recurseFilter(q, query, temp, result);
             return test;

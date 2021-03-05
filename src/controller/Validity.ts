@@ -88,6 +88,9 @@ export default class Validity {
     public static datasetWhere(query: any, splitId: string): boolean {
         let q = query.WHERE;
         let size = Object.keys(q).length;
+        if (size === 0) {
+            return true;
+        }
         if (size > 0) {
             let bool = this.recurse(q, splitId, query);
             if (bool) {

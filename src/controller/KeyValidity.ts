@@ -35,6 +35,9 @@ export default class KeyValidity {
 
         let q = query.WHERE;
         let size = Object.keys(q).length;
+        if (size === 0) {
+            return true;
+        }
         if (size > 0) {
             let bool = this.recurseKey(q, query);
             if (bool) {
@@ -122,6 +125,9 @@ export default class KeyValidity {
     public static goodField(query: any): boolean {
         let q = query.WHERE;
         let size = Object.keys(q).length;
+        if (size === 0) {
+            return true;
+        }
         if (size > 0) {
             let bool = this.recurseField(q, query);
             if (bool) {
