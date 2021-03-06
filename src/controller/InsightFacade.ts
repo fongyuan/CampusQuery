@@ -10,7 +10,6 @@ import * as JSZip from "jszip";
 import * as fs from "fs-extra";
 import Validity from "./Validity";
 import ExecuteQ from "./ExecuteQ";
-import * as fs from "fs";
 /**
  * This is the main programmatic entry point for the project.
  * Method documentation is in IInsightFacade
