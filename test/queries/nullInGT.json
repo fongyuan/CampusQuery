@@ -1,11 +1,9 @@
 {
-    "title": "SELECT dept, avg WHERE avg > 97",
+    "title": "null in GTr",
     "query": {
         "WHERE": {
-            "NOT": {
-                "LT": {
-                    "courses_avg": 100
-                }
+            "GT": {
+                "courses_avg": null
             }
         },
         "OPTIONS": {
@@ -16,6 +14,6 @@
             "ORDER": "courses_avg"
         }
     },
-    "isQueryValid": true,
-    "result": []
+    "isQueryValid": false,
+    "result": "InsightError"
 }
