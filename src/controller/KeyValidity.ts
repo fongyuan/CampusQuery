@@ -1,3 +1,5 @@
+import {split} from "ts-node";
+
 export default class KeyValidity {
     public static goodKey(query: any): boolean {
         let a;
@@ -27,12 +29,13 @@ export default class KeyValidity {
                 splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
                 splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid" ||
                 splitTest[1] === "year") {
-                //
+                if (!KeyValidity.checkInCol(query, splitTest[1])) {
+                    return false;
+                }
             } else {
                 return false;
             }
         }
-
         let q = query.WHERE;
         let size = Object.keys(q).length;
         if (size === 0) {
@@ -46,6 +49,19 @@ export default class KeyValidity {
                 return false;
             }
         }
+    }
+
+    public static checkInCol(query: any, toCheck: any): boolean {
+        let a;
+        let b = query.OPTIONS.COLUMNS.valueOf();
+        for (a in b) {
+            let test = b[a];
+            let splitTest = test.split("_", 2);
+            if (splitTest[1] === toCheck) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static opMatch(oppy: string, object: any, query: any): boolean {
@@ -156,7 +172,7 @@ export default class KeyValidity {
                 } else {
                     let h;
                     let med2: string = med[0];
-                    for (h = 0; h < med2.length; h++) {
+                    for (h = 0; h < med2.length - 1; h++) {
                         if (h === 0) {
                             //
                         } else {

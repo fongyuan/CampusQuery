@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import {resolve as pathResolve} from "path";
 import {ResultTooLargeError} from "./IInsightFacade";
+import Comparators from "./Comparators";
 
 export default class ExecuteQ {
     private static queryQ: any;
@@ -59,11 +60,20 @@ export default class ExecuteQ {
                 let inside = Object.values(query);
                 let testy: any = inside[0];
                 if (keys[0] === "AND") {
-                    return s.andCombine(s.recurseFilter(testy[0], query2, temp, result),
-                        s.recurseFilter(testy[1], query2, temp, result));
+                    let recursed: any[] = [];
+                    for (const x in testy) {
+                        let r = s.recurseFilter(testy[x], query2, temp, result);
+                        recursed.push(r);
+                    }
+                    while (recursed.length > 1) {
+                        recursed.push(Comparators.andCombine(recursed[0], recursed[1]));
+                        recursed.splice(0, 1);
+                        recursed.splice(0, 1);
+                    }
+                    return recursed[0];
                 }
                 if (keys[0] === "OR") {
-                    return s.orCombine(s.recurseFilter(testy[0], query2, temp, result),
+                    return Comparators.orCombine(s.recurseFilter(testy[0], query2, temp, result),
                         s.recurseFilter(testy[1], query2, temp, result));
                 }
             }
@@ -71,163 +81,26 @@ export default class ExecuteQ {
             let inside = Object.values(query);
             let idKey = Object.keys(inside[0]);
             let field = Object.values(inside[0]);
-            if (keys[0] === "GT") {
-                return this.greater(temp, idKey[0], field[0], result);
-            }
-            if (keys[0] === "LT") {
-                return this.lessThan(temp, idKey[0], field[0], result);
-            }
-            if (keys[0] === "EQ") {
-                return this.equalTo(temp, idKey[0], field[0], result);
-            }
-            if (keys[0] === "IS") {
-                return this.sCompare(temp, idKey[0], field[0], result);
-            }
-            if (keys[0] === "NOT") {
-                return this.negate(temp, this.recurseFilter(inside[0], query2, temp, result));
-            }
+            return ExecuteQ.smallRecurse(keys[0], inside, idKey, field, temp, query2, result);
         }
     }
 
-    public static andCombine(arr1: any, arr2: any): any[] {
-        const testC = arr1.filter((value: any) => arr2.includes(value));
-        return testC;
-    }
-
-    public static orCombine(arr1: any, arr2: any): any {
-        const testD = arr1.concat(arr2.filter((value: any) => arr1.indexOf(value) < 0));
-        return testD;
-    }
-
-    public static greater(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key] > field) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
+    public static smallRecurse(op: any, inside: any, idKey: any, field: any, temp: any, query2: any, result: any) {
+        if (op === "GT") {
+            return Comparators.greater(temp, idKey[0], field[0]);
         }
-        return toAdd;
-    }
-
-    public static lessThan(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key] < field) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
+        if (op === "LT") {
+            return Comparators.lessThan(temp, idKey[0], field[0]);
         }
-        return toAdd;
-    }
-
-    public static equalTo(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key] === field) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
+        if (op === "EQ") {
+            return Comparators.equalTo(temp, idKey[0], field[0]);
         }
-        return toAdd;
-    }
-
-    public static sCompare(temp: any, idKey: string, field: any, result: any): any[] {
-        let s = this;
-        let first = field.charAt(0);
-        let last = field.charAt(field.length - 1);
-        if (/\*/.test(first) && !(/\*/.test(last))) {
-            let newField = field.substring(1, field.length);
-            return s.endsWith(temp, idKey, newField, result);
+        if (op === "IS") {
+            return Comparators.sCompare(temp, idKey[0], field[0]);
         }
-        if (!(/\*/.test(first)) && /\*/.test(last)) {
-            let newField = field.substring(0, field.length - 1);
-            return s.startsWith(temp, idKey, newField, result);
+        if (op === "NOT") {
+            return Comparators.negate(temp, this.recurseFilter(inside[0], query2, temp, result));
         }
-        if (/\*/.test(first) && /\*/.test(first)) {
-            let newField = field.substring(1, field.length - 1);
-            return s.containsIt(temp, idKey, newField, result);
-        }
-        if (first !== /\*/ && last !== /\*/) {
-            return s.noWild(temp, idKey, field, result);
-        }
-    }
-
-    public static endsWith(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key].endsWith(field)) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
-        }
-        return toAdd;
-    }
-
-    public static startsWith(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key].startsWith(field)) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
-        }
-        return toAdd;
-    }
-
-    public static containsIt(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];   // {}
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key].includes(field)) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
-        }
-        return toAdd;
-    }
-
-    public static noWild(temp: any, idKey: string, field: any, result: any): any[] {
-        let toAdd: any[] = [];
-        for (const a in temp) {
-            let obj = temp[a];
-            Object.keys(obj).forEach(function (key) {
-                if (key === idKey) {
-                    if (obj[key] === field) {
-                        toAdd.push(obj);
-                    }
-                }
-            });
-        }
-        return toAdd;
-    }
-
-    public static negate(temp: any, array: any[]): any[] {
-        const testC = temp.filter((value: any) => !array.includes(value));
-        return testC;
     }
 
     public static columns(query: any, temp: any, result: any): any[] {
