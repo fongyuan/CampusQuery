@@ -132,10 +132,26 @@ export default class Validity {
         }
     }
 
+    public static notCheck(query: any) {
+        for (const x in query) {
+            if (x === "NOT") {
+                for (const y in query.NOT) {
+                    if (y !== "IS" && y !== "GT" && y !== "EQ" && y !== "LT" && y !== "AND" && y !== "OR") {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public static recurse(query: any, splitId: string, query2: any): boolean {
         let top = Object.values(query);
         let med = Object.values(top[0]);
         let type = typeof med[0];
+        if (!Validity.notCheck(query)) {
+            return false;
+        }
         if (type !== "object") {     // ie GT: {course_avg = 97}
             if (!Validity.notEmpty(top[0])) {
                 return false;
@@ -166,17 +182,24 @@ export default class Validity {
                 return true;
             } else {
                 if (keys[0] === "NOT") {
-                    for (const x in test) {
-                        if (x === "IS") {
-                            if (!this.isRecurse(test, splitId, query2)) {
-                                return false;
-                            }
-                        } else {
-                            if (!this.recurse(test, splitId, query2)) {
-                                return false;
-                            }
-                        }
+                    if (!this.notRecurse(test, splitId, query2)) {
+                        return false;
                     }
+                }
+            }
+        }
+        return true;
+    }
+
+    public static notRecurse(query: any, splitId: string, query2: any) {
+        for (const x in query) {
+            if (x === "IS") {
+                if (!this.isRecurse(query, splitId, query2)) {
+                    return false;
+                }
+            } else {
+                if (!this.recurse(query, splitId, query2)) {
+                    return false;
                 }
             }
         }
