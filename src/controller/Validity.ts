@@ -8,6 +8,9 @@ export default class Validity {
         if (!this.hasOptions(query)) {
             return false;
         }
+        // if (!this.validTransform(query)) {
+        //     return false;
+        // }
         if (!this.validKeys(query)) {
             return false;
         }
@@ -32,6 +35,15 @@ export default class Validity {
         return Validity.notEmpty(query.OPTIONS);
     }
 
+    // public static validTransform(query: any): boolean {
+    //     let i = Object.values(query);
+    //     if (i.length === 3) {
+    //         //
+    //     }
+    //     return true;
+    //     return Validity.notEmpty(query.OPTIONS);
+    // }
+
     public static validKeys(query: any): boolean {
         if (!this.datasetCheck(query)) {
             return false;
@@ -46,7 +58,16 @@ export default class Validity {
     }
 
     public static datasetCheck(query: any): boolean {
-        if (query.OPTIONS.COLUMNS.length === 0) {
+        let keys = [];
+        let k;
+        for (k in query.OPTIONS) {
+            keys.push(k);
+        }
+        if (keys[0] === "COLUMNS") {
+            if (query.OPTIONS.COLUMNS.length === 0) {
+                return false;
+            }
+        } else {
             return false;
         }
         let cols = query.OPTIONS.COLUMNS;
@@ -66,11 +87,6 @@ export default class Validity {
             if (splitTest[0] !== splitId[0]) {
                 return false;
             }
-        }
-        let keys = [];
-        let k;
-        for (k in query.OPTIONS) {
-            keys.push(k);
         }
         if (keys[1] === "ORDER") {
             let test = query.OPTIONS.ORDER;

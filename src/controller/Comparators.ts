@@ -68,7 +68,7 @@ export default class Comparators {
         let s = this;
         let first = field.charAt(0);
         let last = field.charAt(field.length - 1);
-        if (field.length === 1 && /\*/.test(field)) {
+        if (field.length === 1 && /\*/.test(field) || field.length === 2 && /\*\*/.test(field)) {
             return temp;
         }
         if (/\*/.test(first) && !(/\*/.test(last))) {
