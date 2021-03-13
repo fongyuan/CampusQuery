@@ -123,19 +123,21 @@ export default class ExecuteQ {
     }
 
     public static sort(query: any, temp: any, result: any): any[] {
-        if (query.OPTIONS.ORDER.length > 0) {
-            const test1 = query.OPTIONS.ORDER;
-            let splitTest = test1.split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "instructor" ||
-                splitTest[1] === "title" || splitTest[1] === "uuid") {
+        let keys = [];
+        let k;
+        for (k in query.OPTIONS) {
+            keys.push(k);
+        }
+        if (keys[1] === "ORDER") {
+            if (query.OPTIONS.ORDER.length > 0) {
                 result.sort(this.numSort);
             } else {
-                result.sort(this.numSort);
+                result.sort();
             }
+            return result;
         } else {
-            result.sort();
+            return result;
         }
-        return result;
     }
 
     public static numSort(n: any, m: any) {
