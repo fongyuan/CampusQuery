@@ -5,6 +5,12 @@ export default class Validity {
         if (!this.hasNothing(query)) {
             return false;
         }
+        if (!this.hasWhere(query)) {
+            return false;
+        }
+        if (!this.hasColumns(query)) {
+            return false;
+        }
         if (!this.hasOptions(query)) {
             return false;
         }
@@ -32,7 +38,30 @@ export default class Validity {
     }
 
     public static hasOptions(query: any): boolean {
-        return Validity.notEmpty(query.OPTIONS);
+        for (const k in query) {
+            if (k === "OPTIONS") {
+                return Validity.notEmpty(query.OPTIONS);
+            }
+        }
+        return false;
+    }
+
+    public static hasWhere(query: any): boolean {
+        for (const k in query) {
+            if (k === "WHERE") {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static hasColumns(query: any): boolean {
+        for (const k in query.OPTIONS) {
+            if (k === "COLUMNS") {
+                return Validity.notEmpty(query.OPTIONS.COLUMNS);
+            }
+        }
+        return false;
     }
 
     // public static validTransform(query: any): boolean {
@@ -63,11 +92,7 @@ export default class Validity {
         for (k in query.OPTIONS) {
             keys.push(k);
         }
-        if (keys[0] === "COLUMNS") {
-            if (query.OPTIONS.COLUMNS.length === 0) {
-                return false;
-            }
-        } else {
+        if (keys[0] !== "COLUMNS") {
             return false;
         }
         let cols = query.OPTIONS.COLUMNS;
@@ -95,6 +120,13 @@ export default class Validity {
             }
             let splitTest = test.split("_", 1);
             if (splitId[0] !== splitTest[0]) {
+                return false;
+            }
+        } else {
+            if (keys.length > 2) {
+                return false;
+            }
+            if (keys.length === 2 && keys[1] !== "ORDER") {
                 return false;
             }
         }
