@@ -233,15 +233,15 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     });
 
     // rejects because it is a text file not a zip file
-/*    it("Should reject because it is a text file not a zip file", function () {
-        const id: string = "notZip";
-        const futureResult: Promise<string[]> = insightFacade.addDataset(
-            id,
-            datasets[id],
-            InsightDatasetKind.Courses,
-        );
-        return expect(futureResult).to.be.rejectedWith(InsightError);
-    });*/
+    /*    it("Should reject because it is a text file not a zip file", function () {
+            const id: string = "notZip";
+            const futureResult: Promise<string[]> = insightFacade.addDataset(
+                id,
+                datasets[id],
+                InsightDatasetKind.Courses,
+            );
+            return expect(futureResult).to.be.rejectedWith(InsightError);
+        });*/
 
     // successfully removes a dataset
     it("Should remove a valid dataset", function () {
@@ -259,7 +259,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                 const expected2: string = "courses";
                 const futureResult2: Promise<
                     string
-                > = insightFacade.removeDataset(id);
+                    > = insightFacade.removeDataset(id);
                 return expect(futureResult2).to.eventually.deep.equal(
                     expected2,
                 );
@@ -320,7 +320,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                 }];
                 const futureResult2: Promise<
                     InsightDataset[]
-                > = insightFacade.listDatasets();
+                    > = insightFacade.listDatasets();
                 return expect(futureResult2).to.eventually.deep.equal(
                     expected2,
                 );
@@ -332,9 +332,49 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         const expected: InsightDataset[] = [];
         const futureResult: Promise<
             InsightDataset[]
-        > = insightFacade.listDatasets();
+            > = insightFacade.listDatasets();
         return expect(futureResult).to.eventually.deep.equal(expected);
     });
+
+    // it("Check query", function () {
+    //     let query = {
+    //         WHERE: {
+    //             OR: [
+    //                 {
+    //                     AND: [
+    //                         {
+    //                             GT: {
+    //                                 courses_avg: 90
+    //                             }
+    //                         },
+    //                         {
+    //                             IS: {
+    //                                 courses_dept: "adhe"
+    //                             }
+    //                         }
+    //                     ]
+    //                 },
+    //                 {
+    //                     EQ: {
+    //                         courses_avg: 95
+    //                     }
+    //                 }
+    //             ]
+    //         },
+    //         OPTIONS: {
+    //             COLUMNS: [
+    //                 "courses_dept",
+    //                 "courses_id",
+    //                 "courses_avg"
+    //             ],
+    //             ORDER: "courses_avg"
+    //         }
+    //     };
+    //     const futureResult: Promise<
+    //         InsightDataset[]
+    //         > = insightFacade.performQuery(query);
+    //     return expect(futureResult).to.eventually.deep.equal(" ");
+    // });
 
     // lists two datasets
     it("Should list two valid datasets", function () {
@@ -373,7 +413,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
                         expected3.push(out2);
                         const futureResult3: Promise<
                             InsightDataset[]
-                        > = insightFacade.listDatasets();
+                            > = insightFacade.listDatasets();
                         return expect(futureResult3).to.eventually.deep.equal(
                             expected3,
                         );
@@ -455,7 +495,7 @@ describe("InsightFacade PerformQuery", () => {
                 it(`[${test.filename}] ${test.title}`, function () {
                     const futureResult: Promise<
                         any[]
-                    > = insightFacade.performQuery(test.query);
+                        > = insightFacade.performQuery(test.query);
                     return TestUtil.verifyQueryResult(futureResult, test);
                 });
             }

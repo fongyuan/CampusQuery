@@ -1,0 +1,109 @@
+{
+    "title": "end asterisk in inputstring",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "courses_dept": "ana*"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_avg"
+            ],
+            "ORDER": "courses_avg"
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+                {
+                    "courses_avg": 80.28
+                },
+                {
+                    "courses_avg": 80.28
+                },
+                {
+                    "courses_avg": 81.41
+                },
+                {
+                    "courses_avg": 81.41
+                },
+                {
+                    "courses_avg": 81.71
+                },
+                {
+                    "courses_avg": 81.71
+                },
+                {
+                    "courses_avg": 81.82
+                },
+                {
+                    "courses_avg": 81.82
+                },
+                {
+                    "courses_avg": 82.29
+                },
+                {
+                    "courses_avg": 82.29
+                },
+                {
+                    "courses_avg": 83.34
+                },
+                {
+                    "courses_avg": 83.34
+                },
+                {
+                    "courses_avg": 83.6
+                },
+                {
+                    "courses_avg": 83.6
+                },
+                {
+                    "courses_avg": 83.65
+                },
+                {
+                    "courses_avg": 83.65
+                },
+                {
+                    "courses_avg": 83.74
+                },
+                {
+                    "courses_avg": 83.74
+                },
+                {
+                    "courses_avg": 85.4
+                },
+                {
+                    "courses_avg": 85.4
+                },
+                {
+                    "courses_avg": 86.29
+                },
+                {
+                    "courses_avg": 86.29
+                },
+                {
+                    "courses_avg": 86.67
+                },
+                {
+                    "courses_avg": 86.67
+                },
+                {
+                    "courses_avg": 89.6
+                },
+                {
+                    "courses_avg": 89.6
+                },
+                {
+                    "courses_avg": 91.67
+                },
+                {
+                    "courses_avg": 91.67
+                },
+                {
+                    "courses_avg": 92
+                },
+                {
+                    "courses_avg": 92
+                }
+            ]
+}
