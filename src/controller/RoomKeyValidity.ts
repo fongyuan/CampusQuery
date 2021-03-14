@@ -1,33 +1,14 @@
-import RoomKeyValidity from "./RoomKeyValidity";
-
-export default class KeyValidity {
-    public static goodKey(query: any): boolean {
+export default class RoomKeyValidity {
+    public static goodRoomKey(query: any): boolean {
         let a;
         let b = query.OPTIONS.COLUMNS.valueOf();
         for (a in b) {
             let test = b[a];
             let splitTest = test.split("_", 2);
-            if (splitTest[0] === "rooms") {
-                return RoomKeyValidity.goodRoomKey(query);
-            }
-            if (splitTest[0] === "courses") {
-                return KeyValidity.goodCoursesKey(query);
-            } else {
-                return false;
-            }
-        }
-    }
-
-    public static goodCoursesKey(query: any): boolean {
-        let a;
-        let b = query.OPTIONS.COLUMNS.valueOf();
-        for (a in b) {
-            let test = b[a];
-            let splitTest = test.split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid" ||
-                splitTest[1] === "year") {
+            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
+                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
+                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
+                splitTest[1] === "furniture") {
                 //
             } else {
                 return false;
@@ -41,11 +22,11 @@ export default class KeyValidity {
         if (keys[1] === "ORDER") {
             let d = query.OPTIONS.ORDER.valueOf();
             let splitTest = d.split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid" ||
-                splitTest[1] === "year") {
-                if (!KeyValidity.checkInCol(query, splitTest[1])) {
+            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
+                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
+                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
+                splitTest[1] === "furniture") {
+                if (!RoomKeyValidity.checkInCol(query, splitTest[1])) {
                     return false;
                 }
             } else {
@@ -90,8 +71,9 @@ export default class KeyValidity {
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "instructor"
-                || splitTest[1] === "title" || splitTest[1] === "uuid") {
+            if (splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number"
+                || splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type"
+                || splitTest[1] === "furniture" || splitTest[1] === "href") {
                 return false;
             } else {
                 return true;
@@ -106,8 +88,7 @@ export default class KeyValidity {
                 let test = Object.values(query);
                 let test2 = Object.keys(test[0]);
                 let splitTest = test2[0].split("_", 2);
-                if (splitTest[1] === "avg" || splitTest[1] === "pass" || splitTest[1] === "fail"
-                    || splitTest[1] === "audit" || splitTest[1] === "year") {
+                if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats") {
                     return false;
                 } else {
                     return true;
@@ -123,16 +104,16 @@ export default class KeyValidity {
         if (type !== "object") {     // ie GT: {course_avg = 97}
             let opCheck = Object.values(query2);
             let oppy = Object.keys(opCheck[0]);
-            if (!KeyValidity.opMatch(oppy[0], opCheck[0], query)) {
+            if (!RoomKeyValidity.opMatch(oppy[0], opCheck[0], query)) {
                 return false;
             }
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid"
-                || splitTest[1] === "year") {
+            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
+                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
+                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
+                splitTest[1] === "furniture") {
                 //
             } else {
                 return false;
@@ -181,16 +162,21 @@ export default class KeyValidity {
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "instructor"
-                || splitTest[1] === "title" || splitTest[1] === "uuid") {
+            if (splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number"
+                || splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type"
+                || splitTest[1] === "furniture" || splitTest[1] === "href") {
                 if (type !== "string") {
                     return false;
                 } else {
                     let h;
                     let med2: string = med[0];
-                    for (h = 1; h < med2.length - 1; h++) {
-                        if (/\*/.test(med2.charAt(h))) {
-                            return false;
+                    for (h = 0; h < med2.length - 1; h++) {
+                        if (h === 0) {
+                            //
+                        } else {
+                            if (/\*/.test(med2.charAt(h))) {
+                                return false;
+                            }
                         }
                     }
                 }
