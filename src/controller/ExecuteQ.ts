@@ -21,6 +21,13 @@ export default class ExecuteQ {
                 temp = JSON.parse(infs.toString());
                 resolve("done");
             });
+            fs.readFile(pathResolve(__dirname, "../../data/rooms"), "utf-8", (err, infs) => {
+                if (err) {
+                    throw err;
+                }
+                temp = JSON.parse(infs.toString());
+                resolve("done");
+            });
         }).then(() => {
             const variable: any[] = this.filter(query, temp, finalResult);
             if (Validity.hasTransform(query)) {
@@ -31,10 +38,12 @@ export default class ExecuteQ {
                     throw new ResultTooLargeError();
                 }
                 const tVariable: any[] = this.transformCol(query, ExecuteQ.variable2);
-                return tVariable;
+                const sortedResult: any[] = this.transformSort(query, tVariable);
+                let a;
+                return sortedResult;
             } else {
                 const variable4: any[] = this.columns(query, temp, variable);
-                const variable5: any[] = this.sort(query, temp, variable4);
+                const variable5: any[] = this.sort(query, variable4);
                 if (variable5.length > 5000) {
                     throw new ResultTooLargeError();
                 }
@@ -194,7 +203,7 @@ export default class ExecuteQ {
         return result;
     }
 
-    public static sort(query: any, temp: any, result: any): any[] {
+    public static sort(query: any, result: any): any[] {
         let keys = [];
         let k;
         for (k in query.OPTIONS) {
@@ -212,6 +221,34 @@ export default class ExecuteQ {
         }
     }
 
+    public static transformSort(query: any, result: any): any[] {
+        let keys = [];
+        let k;
+        for (k in query.OPTIONS) {
+            keys.push(k);
+        }
+        if (keys[1] === "ORDER") {
+            let orderItem = query.OPTIONS.ORDER.valueOf();
+            if (typeof orderItem === "object") {
+                if (query.OPTIONS.ORDER.dir === "UP") {
+                    result.sort(this.upObjectSort);
+                } else {
+                    result.sort(this.downObjectSort);
+                }
+                // result.sort(this.objectSort);
+            } else {
+                if (query.OPTIONS.ORDER.length > 0) {
+                    result.sort(this.numSort);
+                } else {
+                    result.sort();
+                }
+            }
+            return result;
+        } else {
+            return result;
+        }
+    }
+
     public static numSort(n: any, m: any) {
         let qq = ExecuteQ.queryQ;
         let qq2 = qq.OPTIONS.ORDER;
@@ -221,6 +258,34 @@ export default class ExecuteQ {
             return 0;
         } else {
             return n2 < m2 ? -1 : 1;
+        }
+    }
+
+    public static upObjectSort(n: any, m: any) {
+        let qq = ExecuteQ.queryQ;
+        let qq2 = qq.OPTIONS.ORDER.keys.valueOf();
+        for (const a in qq2) {
+            let n2 = n[qq2[a]];
+            let m2 = m[qq2[a]];
+            if (n2 === m2) {
+                return 0;
+            } else {
+                return n2 < m2 ? -1 : 1;
+            }
+        }
+    }
+
+    public static downObjectSort(n: any, m: any) {
+        let qq = ExecuteQ.queryQ;
+        let qq2 = qq.OPTIONS.ORDER.keys.valueOf();
+        for (const a in qq2) {
+            let n2 = n[qq2[a]];
+            let m2 = m[qq2[a]];
+            if (n2 === m2) {
+                return 0;
+            } else {
+                return n2 > m2 ? -1 : 1;
+            }
         }
     }
 }

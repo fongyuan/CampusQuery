@@ -92,7 +92,7 @@ export default class KeyValidity {
                         return false;
                     }
                 } else {
-                    if (!KeyValidity.checkInCol(query, d) ||
+                    if (!KeyValidity.checkInCol(query, d) &&
                         !NewValidity.checkIfInApply(query, d)) {
                             return false;
                     }
