@@ -13,6 +13,7 @@ export default class NewValidity {
         }
         return false;
     }
+
     public static datasetTransform(query: any, splitId: any): boolean {
         for (const k in query) {
             if (k === "TRANSFORMATIONS") {
