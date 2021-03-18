@@ -1,4 +1,5 @@
 import KeyValidity from "./KeyValidity";
+import NewValidity from "./NewValidity";
 
 export default class Validity {
     public static isValid(query: any): boolean {
@@ -14,9 +15,9 @@ export default class Validity {
         if (!this.hasOptions(query)) {
             return false;
         }
-        // if (!this.validTransform(query)) {
-        //     return false;
-        // }
+        if (!this.validTransform(query)) {
+            return false;
+        }
         if (!this.validKeys(query)) {
             return false;
         }
@@ -64,23 +65,39 @@ export default class Validity {
         return false;
     }
 
-    // public static validTransform(query: any): boolean {
-    //     let i = Object.values(query);
-    //     if (i.length === 3) {
-    //         //
-    //     }
-    //     return true;
-    //     return Validity.notEmpty(query.OPTIONS);
-    // }
+    public static validTransform(query: any): boolean {
+        if (this.hasTransform(query)) {
+            return true;
+        }
+        return true;
+    }
+
+    public static hasTransform(query: any): boolean {
+        for (const k in query) {
+            if (k === "TRANSFORMATIONS") {
+                if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
+                    return false;
+                }
+                let s;
+                let keys = [];
+                for (s in query.TRANSFORMATIONS) {
+                    keys.push(s);
+                }
+                if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public static validKeys(query: any): boolean {
         if (!this.datasetCheck(query)) {
             return false;
         }
         if (!KeyValidity.goodKey(query)) {
-            return false;
-        }
-        if (!KeyValidity.goodField(query)) {
             return false;
         }
         return true;
@@ -110,17 +127,47 @@ export default class Validity {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
+                if (this.hasTransform(query)) {
+                    if (!NewValidity.checkIfInApply(query, splitTest[0])) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        if (!Validity.datasetOption(query, splitId[0], keys)) {
+            return false;
+        }
+        if (this.hasTransform(query)) {
+            if (!NewValidity.datasetTransform(query, splitId[0])) {
                 return false;
             }
         }
+        return Validity.datasetWhere(query, splitId[0]);
+    }
+
+    public static datasetOption(query: any, splitId: any, keys: any) {
         if (keys[1] === "ORDER") {
             let test = query.OPTIONS.ORDER;
-            if (typeof test !== "string" || test === null || test === undefined) {
+            if ((typeof test !== "string" && typeof test !== "object") || test === null || test === undefined) {
                 return false;
             }
-            let splitTest = test.split("_", 1);
-            if (splitId[0] !== splitTest[0]) {
-                return false;
+            if (typeof test === "object") {
+                if (!NewValidity.orderObject(query, splitId)) {
+                    return false;
+                }
+            } else {
+                let splitTest = test.split("_", 1);
+                if (splitId !== splitTest[0]) {
+                    if (this.hasTransform(query)) {
+                        if (!NewValidity.checkIfInApply(query, splitTest[0])) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
             }
         } else {
             if (keys.length > 2) {
@@ -130,7 +177,7 @@ export default class Validity {
                 return false;
             }
         }
-        return Validity.datasetWhere(query, splitId[0]);
+        return true;
     }
 
     public static datasetWhere(query: any, splitId: string): boolean {

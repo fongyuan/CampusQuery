@@ -2,9 +2,12 @@ import * as fs from "fs";
 import {resolve as pathResolve} from "path";
 import {ResultTooLargeError} from "./IInsightFacade";
 import Comparators from "./Comparators";
+import Validity from "./Validity";
+import ApplyFunctions from "./ApplyFunctions";
 
 export default class ExecuteQ {
     private static queryQ: any;
+    private static variable2: Map<any, any>;
 
     public static execute(query: any): any {
         let temp: any;
@@ -20,12 +23,23 @@ export default class ExecuteQ {
             });
         }).then(() => {
             const variable: any[] = this.filter(query, temp, finalResult);
-            if (variable.length > 5000) {
-                throw new ResultTooLargeError();
+            if (Validity.hasTransform(query)) {
+                ExecuteQ.variable2 = this.group(query, variable);
+                this.applyFunc(query);
+                let count = this.variable2.size;
+                if (count > 5000) {
+                    throw new ResultTooLargeError();
+                }
+                const tVariable: any[] = this.transformCol(query, ExecuteQ.variable2);
+                return tVariable;
+            } else {
+                const variable4: any[] = this.columns(query, temp, variable);
+                const variable5: any[] = this.sort(query, temp, variable4);
+                if (variable5.length > 5000) {
+                    throw new ResultTooLargeError();
+                }
+                return variable5;
             }
-            const variable2: any[] = this.columns(query, temp, variable);
-            const var3: any[] = this.sort(query, temp, variable2);
-            return var3;
         });
     }
 
@@ -103,6 +117,58 @@ export default class ExecuteQ {
         }
     }
 
+    public static group(query: any, result: any): Map<any, any> {
+        let map = new Map();
+        let groupList = query.TRANSFORMATIONS.GROUP.valueOf();
+        for (const a in result) {
+            let obj = result[a];
+            let keyString = "";
+            for (const b in groupList) {
+                keyString += obj[groupList[b]];
+            }
+            if (map.has(keyString)) {
+                let array = map.get(keyString);
+                array.push(obj);
+                map.set(keyString, array);
+            } else {
+                let array = [];
+                array.push(obj);
+                map.set(keyString, array);
+            }
+        }
+        return map;
+    }
+
+    public static applyFunc(query: any): void {
+        let apply = query.TRANSFORMATIONS.APPLY.valueOf();
+        for (const a in apply) {
+            let obj = apply[a];
+            let obj2 = Object.values(obj)[0];
+            let name = Object.keys(obj);
+            let op = Object.keys(obj2);
+            let key = Object.values(obj2);
+            ExecuteQ.opApply(op[0], key[0], name[0]);
+        }
+    }
+
+    public static opApply(op: any, key: any, name: string): void {
+        if (op === "MAX") {
+            ApplyFunctions.maxApply(key, name, ExecuteQ.variable2);
+        }
+        if (op === "MIN") {
+            ApplyFunctions.minApply(key, name, ExecuteQ.variable2);
+        }
+        if (op === "AVG") {
+            ApplyFunctions.avgApply(key, name, ExecuteQ.variable2);
+        }
+        if (op === "COUNT") {
+            ApplyFunctions.countApply(key, name, ExecuteQ.variable2);
+        }
+        if (op === "SUM") {
+            ApplyFunctions.sumApply(key, name, ExecuteQ.variable2);
+        }
+    }
+
     public static columns(query: any, temp: any, result: any): any[] {
         let d = query.OPTIONS.COLUMNS.valueOf();
         for (const a in result) {
@@ -119,6 +185,12 @@ export default class ExecuteQ {
                 delete obj[key];
             });
         }
+        return result;
+    }
+
+    private static transformCol(query: any, variable2: Map<any, any>): any[] {
+        let d = query.OPTIONS.COLUMNS.valueOf();
+        let result: any[] = ApplyFunctions.transformColumns(d, variable2);
         return result;
     }
 
@@ -151,7 +223,6 @@ export default class ExecuteQ {
             return n2 < m2 ? -1 : 1;
         }
     }
-
 }
 
 
