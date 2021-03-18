@@ -117,7 +117,10 @@ export default class NewValidity {
                 if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
                     splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
                     splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
-                    splitTest[1] !== "furniture") {
+                    splitTest[1] !== "furniture" && splitTest[1] !== "avg" && splitTest[1] !== "pass" &&
+                    splitTest[1] !== "faiL" && splitTest[1] !== "audit" && splitTest[1] !== "year" &&
+                    splitTest[1] !== "dept" && splitTest[1] !== "id" && splitTest[1] !== "instructor" &&
+                    splitTest[1] !== "title") {
                     return false;
                 }
             }
