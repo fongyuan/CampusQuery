@@ -24,28 +24,29 @@ export default class AddRoom {
                         });
                         list.push(promise);
                     }
-                    Promise.all(list).then((data: any) => {
+                    return Promise.all(list).then((data: any) => {
                         for (let i = 0; i < buildings.length; i++) {
                             buildings[i]["lat"] = data[i]["lat"];
                             buildings[i]["lon"] = data[i]["lon"];
                         }
-                        for (let building of buildings) {
-                            let path = "rooms/campus/discover/buildings-and-classrooms/";
-                            let sn = id + "_shortname";
-                            let load = zip.folder(path).file(building[sn]).async("string").then((data2: any) => {
-                                roomsHTML.push(data2);
-                            });
-                            roomsPromise.push(load);
-                        }
-                        Promise.all(roomsPromise).then(() => {
-                            let roomsOut = this.createRoomsOut(id, roomsHTML, buildings);
-                            if (roomsOut.length <= 0) {
-                                reject(new InsightError());
-                            }
-                            this.writeToDisk(roomsOut, id);
-                            files.push(id);
-                            resolve(files);
+                    });
+                }).then(() => {
+                    for (let building of buildings) {
+                        let path = "rooms/campus/discover/buildings-and-classrooms/";
+                        let sn = id + "_shortname";
+                        let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
+                            roomsHTML.push(data);
                         });
+                        roomsPromise.push(load);
+                    }
+                    Promise.all(roomsPromise).then(() => {
+                        let roomsOut = this.createRoomsOut(id, roomsHTML, buildings);
+                        if (roomsOut.length <= 0) {
+                            reject(new InsightError());
+                        }
+                        this.writeToDisk(roomsOut, id);
+                        files.push(id);
+                        resolve(files);
                     });
                 });
             });
