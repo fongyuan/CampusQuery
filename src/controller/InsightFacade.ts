@@ -56,7 +56,6 @@ export default class InsightFacade implements IInsightFacade {
         if (!this.idValidation(id)) {
             return Promise.reject(new InsightError());
         }
-        // let fs = require("fs");
         let files = fs.readdirSync("./data");
         if (!files.includes(id)) {
             return Promise.reject(new NotFoundError());
@@ -65,7 +64,6 @@ export default class InsightFacade implements IInsightFacade {
         try {
             fs.unlinkSync(path);
         } catch (err) {
-            // Log.error(err);
             return Promise.reject(new InsightError());
         }
         return Promise.resolve(id);
@@ -80,15 +78,13 @@ export default class InsightFacade implements IInsightFacade {
 
     public listDatasets(): Promise<InsightDataset[]> {
         let files = fs.readdirSync("./data");
-        let list: any[] = [];
         let out: InsightDataset[] = [];
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             for (const each of files) {
                 let path = "./data/" + each;
                 let infs = fs.readFileSync(path, "utf-8");
                 let temp = JSON.parse(infs.toString());
-                list.push(temp);
-                let insightOut: InsightDataset = {id: "", numRows: 0, kind: InsightDatasetKind.Courses};
+                let insightOut: InsightDataset = {id: "", numRows: 0, kind: temp[0].kind};
                 insightOut.id = each;
                 insightOut.numRows = temp.length;
                 out.push(insightOut);
