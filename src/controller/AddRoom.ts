@@ -1,4 +1,4 @@
-import {InsightError} from "./IInsightFacade";
+import {InsightDatasetKind, InsightError} from "./IInsightFacade";
 import * as fs from "fs-extra";
 
 const teamURL = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team160/";
@@ -143,6 +143,7 @@ export default class AddRoom {
         out[type] = rtype;
         out[furniture] = furn;
         out[href] = rhref;
+        out["kind"] = InsightDatasetKind.Rooms;
         return out;
     }
 
