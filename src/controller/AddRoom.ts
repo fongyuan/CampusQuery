@@ -24,29 +24,30 @@ export default class AddRoom {
                         });
                         list.push(promise);
                     }
-                    Promise.all(list).then((data: any) => {
+                    // from https://stackoverflow.com/questions/36759061/how-to-chain-a-promise-all-with-other-promises
+                    return Promise.all(list).then((data: any) => {
                         for (let i = 0; i < buildings.length; i++) {
                             buildings[i]["lat"] = data[i]["lat"];
                             buildings[i]["lon"] = data[i]["lon"];
                         }
-                    }).then(() => {
-                        for (let building of buildings) {
-                            let path = "rooms/campus/discover/buildings-and-classrooms/";
-                            let sn = id + "_shortname";
-                            let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
-                                roomsHTML.push(data);
-                            });
-                            roomsPromise.push(load);
-                        }
-                        Promise.all(roomsPromise).then(() => {
-                            let roomsOut = this.createRoomsOut(id, roomsHTML, buildings);
-                            if (roomsOut.length <= 0) {
-                                reject(new InsightError());
-                            }
-                            this.writeToDisk(roomsOut, id);
-                            files.push(id);
-                            resolve(files);
+                    });
+                }).then(() => {
+                    for (let building of buildings) {
+                        let path = "rooms/campus/discover/buildings-and-classrooms/";
+                        let sn = id + "_shortname";
+                        let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
+                            roomsHTML.push(data);
                         });
+                        roomsPromise.push(load);
+                    }
+                    Promise.all(roomsPromise).then(() => {
+                        let roomsOut = this.createRoomsOut(id, roomsHTML, buildings);
+                        if (roomsOut.length <= 0) {
+                            reject(new InsightError());
+                        }
+                        this.writeToDisk(roomsOut, id);
+                        files.push(id);
+                        resolve(files);
                     });
                 });
             });
