@@ -29,12 +29,11 @@ export default class AddRoom {
                             buildings[i]["lat"] = data[i]["lat"];
                             buildings[i]["lon"] = data[i]["lon"];
                         }
-                    }).then(() => {
                         for (let building of buildings) {
                             let path = "rooms/campus/discover/buildings-and-classrooms/";
                             let sn = id + "_shortname";
-                            let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
-                                roomsHTML.push(data);
+                            let load = zip.folder(path).file(building[sn]).async("string").then((data2: any) => {
+                                roomsHTML.push(data2);
                             });
                             roomsPromise.push(load);
                         }
