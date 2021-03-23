@@ -24,6 +24,7 @@ export default class AddRoom {
                         });
                         list.push(promise);
                     }
+                    // from https://stackoverflow.com/questions/36759061/how-to-chain-a-promise-all-with-other-promises
                     return Promise.all(list).then((data: any) => {
                         for (let i = 0; i < buildings.length; i++) {
                             buildings[i]["lat"] = data[i]["lat"];
