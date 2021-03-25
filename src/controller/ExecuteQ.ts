@@ -13,21 +13,15 @@ export default class ExecuteQ {
         let temp: any;
         let finalResult: any[] = [];
         this.queryQ = query;
+        let pathName = this.getDatasetName(query);
         return new Promise((resolve) => {
-            fs.readFile(pathResolve(__dirname, "../../data/courses"), "utf-8", (err, infs) => {
+            fs.readFile(pathResolve(__dirname, pathName), "utf-8", (err, infs) => {
                 if (err) {
                     throw err;
                 }
                 temp = JSON.parse(infs.toString());
                 resolve("done");
             });
-            // fs.readFile(pathResolve(__dirname, "../../data/rooms"), "utf-8", (err, infs) => {
-            //     if (err) {
-            //         throw err;
-            //     }
-            //     temp = JSON.parse(infs.toString());
-            //     resolve("done");
-            // });
         }).then(() => {
             const variable: any[] = this.filter(query, temp, finalResult);
             if (Validity.hasTransform(query)) {
@@ -39,7 +33,6 @@ export default class ExecuteQ {
                 }
                 const tVariable: any[] = this.transformCol(query, ExecuteQ.variable2);
                 const sortedResult: any[] = this.transformSort(query, tVariable);
-                let a;
                 return sortedResult;
             } else {
                 const variable4: any[] = this.columns(query, temp, variable);
@@ -50,6 +43,14 @@ export default class ExecuteQ {
                 return variable5;
             }
         });
+    }
+
+    public static getDatasetName(query: any): string {
+        let col = query.OPTIONS.COLUMNS[0];
+        let splitId = col.split("_", 1);
+        let name = splitId[0];
+        let path = "../../data/";
+        return path.concat(name);
     }
 
     public static filter(query: any, temp: any, result: any): any[] {
