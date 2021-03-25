@@ -2,11 +2,8 @@ import RoomKeyValidity from "./RoomKeyValidity";
 import NewValidity from "./NewValidity";
 
 export default class KeyValidity {
-    public static goodKey(query: any): boolean {
-        let b = query.OPTIONS.COLUMNS.valueOf();
-        let test = b[0];
-        let splitTest = test.split("_", 2);
-        if (splitTest[0] === "rooms") {
+    public static goodKey(query: any, typeOfData: string): boolean {
+        if (typeOfData === "rooms") {
             if (!RoomKeyValidity.goodRoomKey(query)) {
                 return false;
             }
@@ -14,7 +11,7 @@ export default class KeyValidity {
                 return false;
             }
         } else {
-            if (splitTest[0] === "courses") {
+            if (typeOfData === "courses") {
                 if (!KeyValidity.goodCoursesKey(query)) {
                     return false;
                 }

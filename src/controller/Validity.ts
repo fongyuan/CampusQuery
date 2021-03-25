@@ -97,9 +97,9 @@ export default class Validity {
         if (!this.datasetCheck(query)) {
             return false;
         }
-        if (!KeyValidity.goodKey(query)) {
-            return false;
-        }
+        // if (!KeyValidity.goodKey(query)) {
+        //     return false;
+        // }
         return true;
     }
 

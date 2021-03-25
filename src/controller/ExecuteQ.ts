@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import {resolve as pathResolve} from "path";
-import {ResultTooLargeError} from "./IInsightFacade";
+import {InsightError, ResultTooLargeError} from "./IInsightFacade";
 import Comparators from "./Comparators";
 import Validity from "./Validity";
 import ApplyFunctions from "./ApplyFunctions";
+import KeyValidity from "./KeyValidity";
 
 export default class ExecuteQ {
     private static queryQ: any;
@@ -13,7 +14,7 @@ export default class ExecuteQ {
         let temp: any;
         let finalResult: any[] = [];
         this.queryQ = query;
-        let pathName = this.getDatasetName(query); //
+        let pathName = Comparators.getDatasetName(query);
         return new Promise((resolve) => {
             fs.readFile(pathResolve(__dirname, pathName), "utf-8", (err, infs) => {
                 if (err) {
@@ -23,6 +24,10 @@ export default class ExecuteQ {
                 resolve("done");
             });
         }).then(() => {
+            let typeOfData = temp[0].kind;
+            if (!KeyValidity.goodKey(this.queryQ, typeOfData)) {
+                return Promise.reject(new InsightError());
+            }
             const variable: any[] = this.filter(query, temp, finalResult);
             if (Validity.hasTransform(query)) {
                 ExecuteQ.variable2 = this.group(query, variable);
@@ -43,14 +48,6 @@ export default class ExecuteQ {
                 return variable5;
             }
         });
-    }
-
-    public static getDatasetName(query: any): string {
-        let col = query.OPTIONS.COLUMNS[0];
-        let splitId = col.split("_", 1);
-        let name = splitId[0];
-        let path = "../../data/";
-        return path.concat(name);
     }
 
     public static filter(query: any, temp: any, result: any): any[] {
