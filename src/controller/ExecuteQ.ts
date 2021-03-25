@@ -21,13 +21,13 @@ export default class ExecuteQ {
                 temp = JSON.parse(infs.toString());
                 resolve("done");
             });
-            fs.readFile(pathResolve(__dirname, "../../data/rooms"), "utf-8", (err, infs) => {
-                if (err) {
-                    throw err;
-                }
-                temp = JSON.parse(infs.toString());
-                resolve("done");
-            });
+            // fs.readFile(pathResolve(__dirname, "../../data/rooms"), "utf-8", (err, infs) => {
+            //     if (err) {
+            //         throw err;
+            //     }
+            //     temp = JSON.parse(infs.toString());
+            //     resolve("done");
+            // });
         }).then(() => {
             const variable: any[] = this.filter(query, temp, finalResult);
             if (Validity.hasTransform(query)) {

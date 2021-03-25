@@ -21,8 +21,6 @@ export default class KeyValidity {
                 if (!KeyValidity.goodField(query)) {
                     return false;
                 }
-            } else {
-                return false;
             }
         }
         return true;

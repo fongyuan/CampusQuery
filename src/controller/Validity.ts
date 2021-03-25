@@ -134,6 +134,12 @@ export default class Validity {
                 } else {
                     return false;
                 }
+            } else {
+                if (this.hasTransform(query)) {
+                    if (!NewValidity.checkIfInGroup(query, test)) {
+                        return false;
+                    }
+                }
             }
         }
         if (!Validity.datasetOption(query, splitId[0], keys)) {
