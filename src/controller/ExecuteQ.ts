@@ -13,7 +13,7 @@ export default class ExecuteQ {
         let temp: any;
         let finalResult: any[] = [];
         this.queryQ = query;
-        let pathName = this.getDatasetName(query);
+        let pathName = this.getDatasetName(query); //
         return new Promise((resolve) => {
             fs.readFile(pathResolve(__dirname, pathName), "utf-8", (err, infs) => {
                 if (err) {
