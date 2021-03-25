@@ -14,6 +14,19 @@ export default class NewValidity {
         return false;
     }
 
+    public static checkIfInGroup(query: any, splitTest: any): boolean {
+        let y;
+        y = query.TRANSFORMATIONS.GROUP.valueOf();
+        let x;
+        for (x in y) {
+            let test = y[x];
+            if (test === splitTest) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static datasetTransform(query: any, splitId: any): boolean {
         for (const k in query) {
             if (k === "TRANSFORMATIONS") {
@@ -64,12 +77,19 @@ export default class NewValidity {
         for (const x in apply) {
             let test = Object.values(apply[x])[0];
             let applyKey = Object.keys(test)[0];
+            let applyField = Object.values(test)[0];
+            let splitTest = applyField.split("_", 2);
             if (applyKey !== "MAX" && applyKey !== "MIN" && applyKey !== "AVG" && applyKey !== "COUNT" &&
                 applyKey !== "SUM" ) {
                 return false;
             }
-            let test2 = Object.values(test)[0];
-            let splitTest = test2.split("_", 1);
+            if (applyKey === "MAX" || applyKey === "MIN" || applyKey === "AVG" || applyKey === "SUM") {
+                if (splitTest[1] !== "avg" && splitTest[1] !== "pass" &&  splitTest[1] !== "fail" &&
+                    splitTest[1] !== "audit" && splitTest[1] !== "year" && splitTest[1] !== "lat" &&
+                    splitTest[1] !== "lon" && splitTest[1] !== "seats") {
+                    return false;
+                }
+            }
             if (splitTest[0] !== splitId) {
                 return false;
             }
