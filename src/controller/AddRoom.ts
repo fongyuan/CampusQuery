@@ -126,6 +126,7 @@ export default class AddRoom {
         let fullname = id + "_fullname";
         let shortname = id + "_shortname";
         let rnumber = id + "_number";
+        let roomname = id + "_name";
         let address = id + "_address";
         let lat = id + "_lat";
         let lon = id + "_lon";
@@ -137,6 +138,7 @@ export default class AddRoom {
         out[fullname] = b[fullname];
         out[shortname] = b[shortname];
         out[rnumber] = rnum;
+        out[roomname] = b[shortname] + "_" + rnum;
         out[address] = b[address];
         out[lat] = b["lat"];
         out[lon] = b["lon"];
