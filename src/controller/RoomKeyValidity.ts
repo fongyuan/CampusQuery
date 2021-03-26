@@ -11,7 +11,7 @@ export default class RoomKeyValidity {
             if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
                 splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
                 splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
-                splitTest[1] !== "furniture") {
+                splitTest[1] !== "furniture" && splitTest[1] !== "href") {
                 if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                     return false;
                 }
@@ -39,7 +39,7 @@ export default class RoomKeyValidity {
         if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
             splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
             splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
-            splitTest[1] !== "furniture") {
+            splitTest[1] !== "furniture" && splitTest[1] !== "href") {
             return false;
         }
         return true;

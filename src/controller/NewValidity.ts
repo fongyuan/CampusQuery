@@ -140,7 +140,7 @@ export default class NewValidity {
                     splitTest[1] !== "furniture" && splitTest[1] !== "avg" && splitTest[1] !== "pass" &&
                     splitTest[1] !== "faiL" && splitTest[1] !== "audit" && splitTest[1] !== "year" &&
                     splitTest[1] !== "dept" && splitTest[1] !== "id" && splitTest[1] !== "instructor" &&
-                    splitTest[1] !== "title") {
+                    splitTest[1] !== "title" && splitTest[1] !== "href") {
                     return false;
                 }
             }

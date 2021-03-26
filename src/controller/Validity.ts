@@ -70,6 +70,10 @@ export default class Validity {
             if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
                 return false;
             }
+            let type = query.TRANSFORMATIONS.valueOf();
+            if (typeof type !== "object") {
+                return false;
+            }
             let s;
             let keys = [];
             for (s in query.TRANSFORMATIONS) {
