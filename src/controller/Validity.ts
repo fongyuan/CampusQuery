@@ -124,7 +124,7 @@ export default class Validity {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
-                if (this.validTransform(query)) {
+                if (this.hasTransform(query)) {
                     if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                         return false;
                     }
@@ -132,7 +132,7 @@ export default class Validity {
                     return false;
                 }
             } else {
-                if (this.validTransform(query)) {
+                if (this.hasTransform(query)) {
                     if (!NewValidity.checkIfInGroup(query, test)) {
                         return false;
                     }
@@ -142,7 +142,7 @@ export default class Validity {
         if (!Validity.datasetOption(query, splitId[0], keys)) {
             return false;
         }
-        if (this.validTransform(query)) {
+        if (this.hasTransform(query)) {
             if (!NewValidity.datasetTransform(query, splitId[0])) {
                 return false;
             }
@@ -163,7 +163,7 @@ export default class Validity {
             } else {
                 let splitTest = test.split("_", 1);
                 if (splitId !== splitTest[0]) {
-                    if (this.validTransform(query)) {
+                    if (this.hasTransform(query)) {
                         if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                             return false;
                         }
