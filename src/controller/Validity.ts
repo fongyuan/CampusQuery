@@ -9,10 +9,10 @@ export default class Validity {
         if (!this.hasWhere(query)) {
             return false;
         }
-        if (!this.hasColumns(query)) {
+        if (!this.hasOptions(query)) {
             return false;
         }
-        if (!this.hasOptions(query)) {
+        if (!this.hasColumns(query)) {
             return false;
         }
         if (!this.validTransform(query)) {
@@ -67,7 +67,19 @@ export default class Validity {
 
     public static validTransform(query: any): boolean {
         if (this.hasTransform(query)) {
-            return true;
+            if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
+                return false;
+            }
+            let s;
+            let keys = [];
+            for (s in query.TRANSFORMATIONS) {
+                keys.push(s);
+            }
+            if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
+                return false;
+            } else {
+                return true;
+            }
         }
         return true;
     }
@@ -75,19 +87,7 @@ export default class Validity {
     public static hasTransform(query: any): boolean {
         for (const k in query) {
             if (k === "TRANSFORMATIONS") {
-                if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
-                    return false;
-                }
-                let s;
-                let keys = [];
-                for (s in query.TRANSFORMATIONS) {
-                    keys.push(s);
-                }
-                if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
-                    return false;
-                } else {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -97,9 +97,6 @@ export default class Validity {
         if (!this.datasetCheck(query)) {
             return false;
         }
-        // if (!KeyValidity.goodKey(query)) {
-        //     return false;
-        // }
         return true;
     }
 
@@ -127,7 +124,7 @@ export default class Validity {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
-                if (this.hasTransform(query)) {
+                if (this.validTransform(query)) {
                     if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                         return false;
                     }
@@ -135,7 +132,7 @@ export default class Validity {
                     return false;
                 }
             } else {
-                if (this.hasTransform(query)) {
+                if (this.validTransform(query)) {
                     if (!NewValidity.checkIfInGroup(query, test)) {
                         return false;
                     }
@@ -145,7 +142,7 @@ export default class Validity {
         if (!Validity.datasetOption(query, splitId[0], keys)) {
             return false;
         }
-        if (this.hasTransform(query)) {
+        if (this.validTransform(query)) {
             if (!NewValidity.datasetTransform(query, splitId[0])) {
                 return false;
             }
@@ -166,7 +163,7 @@ export default class Validity {
             } else {
                 let splitTest = test.split("_", 1);
                 if (splitId !== splitTest[0]) {
-                    if (this.hasTransform(query)) {
+                    if (this.validTransform(query)) {
                         if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                             return false;
                         }
