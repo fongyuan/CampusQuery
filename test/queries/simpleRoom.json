@@ -1,0 +1,39 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "EQ": {
+                "rooms_seats": 50
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name"
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "rooms_name": "ALRD_121"
+        },
+        {
+            "rooms_name": "BUCH_D316"
+        },
+        {
+            "rooms_name": "BUCH_D317"
+        },
+        {
+            "rooms_name": "BUCH_D322"
+        },
+        {
+            "rooms_name": "EOSM_135"
+        },
+        {
+            "rooms_name": "IONA_633"
+        },
+        {
+            "rooms_name": "IBLC_155"
+        }
+    ]
+}

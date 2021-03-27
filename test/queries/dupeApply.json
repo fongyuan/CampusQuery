@@ -1,0 +1,35 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "IS": {
+                "rooms_shortname": "BUCH"
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "rooms_name",
+                "sumSeats"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "rooms_name"
+            ],
+            "APPLY": [
+                {
+                    "sumSeats": {
+                        "SUM": "rooms_seats"
+                    }
+                },
+                {
+                    "sumSeats": {
+                        "SUM": "rooms_seats"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": false,
+    "result": "InsightError"
+}

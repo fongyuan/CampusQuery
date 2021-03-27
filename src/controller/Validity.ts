@@ -1,4 +1,4 @@
-import KeyValidity from "./KeyValidity";
+import NewValidity from "./NewValidity";
 
 export default class Validity {
     public static isValid(query: any): boolean {
@@ -8,15 +8,15 @@ export default class Validity {
         if (!this.hasWhere(query)) {
             return false;
         }
-        if (!this.hasColumns(query)) {
-            return false;
-        }
         if (!this.hasOptions(query)) {
             return false;
         }
-        // if (!this.validTransform(query)) {
-        //     return false;
-        // }
+        if (!this.hasColumns(query)) {
+            return false;
+        }
+        if (!this.validTransform(query)) {
+            return false;
+        }
         if (!this.validKeys(query)) {
             return false;
         }
@@ -24,8 +24,7 @@ export default class Validity {
     }
 
     public static notEmpty(query: any): boolean {
-        let k;
-        for (k in query) {
+        for (const k in query) {
             if (query.hasOwnProperty(k)) {
                 return true;
             }
@@ -64,23 +63,39 @@ export default class Validity {
         return false;
     }
 
-    // public static validTransform(query: any): boolean {
-    //     let i = Object.values(query);
-    //     if (i.length === 3) {
-    //         //
-    //     }
-    //     return true;
-    //     return Validity.notEmpty(query.OPTIONS);
-    // }
+    public static validTransform(query: any): boolean {
+        if (this.hasTransform(query)) {
+            if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
+                return false;
+            }
+            let type = query.TRANSFORMATIONS.valueOf();
+            if (typeof type !== "object") {
+                return false;
+            }
+            let keys = [];
+            for (const s in query.TRANSFORMATIONS) {
+                keys.push(s);
+            }
+            if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
+    }
+
+    public static hasTransform(query: any): boolean {
+        for (const k in query) {
+            if (k === "TRANSFORMATIONS") {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static validKeys(query: any): boolean {
         if (!this.datasetCheck(query)) {
-            return false;
-        }
-        if (!KeyValidity.goodKey(query)) {
-            return false;
-        }
-        if (!KeyValidity.goodField(query)) {
             return false;
         }
         return true;
@@ -88,39 +103,84 @@ export default class Validity {
 
     public static datasetCheck(query: any): boolean {
         let keys = [];
-        let k;
-        for (k in query.OPTIONS) {
+        for (const k in query.OPTIONS) {
             keys.push(k);
         }
         if (keys[0] !== "COLUMNS") {
             return false;
         }
         let cols = query.OPTIONS.COLUMNS;
+        let setId;
         for (const element of cols) {
             if (typeof element !== "string" || element === null || element === undefined) {
                 return false;
             }
+            if (/_/.test(element)) {
+                setId = element;
+            }
         }
-        let setId = query.OPTIONS.COLUMNS[0];
+        if (setId === undefined) {
+            if (NewValidity.checkIfInApply(query, cols[0])) {
+                setId = NewValidity.grabIdFromApply(query, cols[0]);
+            }
+        }
         let splitId = setId.split("_", 1);
-        let y;
-        y = query.OPTIONS.COLUMNS.valueOf();
-        let x;
-        for (x in y) {
+        let y = query.OPTIONS.COLUMNS.valueOf();
+        for (const x in y) {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
+                if (this.hasTransform(query)) {
+                    if (!NewValidity.checkIfInApply(query, splitTest[0])) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                if (this.hasTransform(query)) {
+                    if (!NewValidity.checkIfInGroup(query, test)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return Validity.datasetCheck2(query, splitId, keys);
+    }
+
+    public static datasetCheck2(query: any, splitId: any, keys: any): boolean {
+        if (!Validity.datasetOption(query, splitId[0], keys)) {
+            return false;
+        }
+        if (this.hasTransform(query)) {
+            if (!NewValidity.datasetTransform(query, splitId[0])) {
                 return false;
             }
         }
+        return Validity.datasetWhere(query, splitId[0]);
+    }
+
+    public static datasetOption(query: any, splitId: any, keys: any) {
         if (keys[1] === "ORDER") {
             let test = query.OPTIONS.ORDER;
-            if (typeof test !== "string" || test === null || test === undefined) {
+            if ((typeof test !== "string" && typeof test !== "object") || test === null || test === undefined) {
                 return false;
             }
-            let splitTest = test.split("_", 1);
-            if (splitId[0] !== splitTest[0]) {
-                return false;
+            if (typeof test === "object") {
+                if (!NewValidity.orderObject(query, splitId)) {
+                    return false;
+                }
+            } else {
+                let splitTest = test.split("_", 1);
+                if (splitId !== splitTest[0]) {
+                    if (this.hasTransform(query)) {
+                        if (!NewValidity.checkIfInApply(query, splitTest[0])) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
             }
         } else {
             if (keys.length > 2) {
@@ -130,17 +190,16 @@ export default class Validity {
                 return false;
             }
         }
-        return Validity.datasetWhere(query, splitId[0]);
+        return true;
     }
 
     public static datasetWhere(query: any, splitId: string): boolean {
-        let q = query.WHERE;
-        let size = Object.keys(q).length;
+        let size = Object.keys(query.WHERE).length;
         if (size === 0) {
             return true;
         }
         if (size > 0) {
-            let bool = this.recurse(q, splitId, query);
+            let bool = this.recurse(query.WHERE, splitId, query);
             if (bool) {
                 return true;
             } else {
@@ -199,8 +258,7 @@ export default class Validity {
                 return false;
             }
             let keys = [];
-            let k;
-            for (k in query) {
+            for (const k in query) {
                 keys.push(k);
             }
             let inside = Object.values(query);

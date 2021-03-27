@@ -1,3 +1,6 @@
+import NewValidity from "./NewValidity";
+import KeyValidity from "./KeyValidity";
+
 export default class RoomKeyValidity {
     public static goodRoomKey(query: any): boolean {
         let a;
@@ -5,33 +8,17 @@ export default class RoomKeyValidity {
         for (a in b) {
             let test = b[a];
             let splitTest = test.split("_", 2);
-            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
-                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
-                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
-                splitTest[1] === "furniture") {
-                //
-            } else {
-                return false;
-            }
-        }
-        let keys = [];
-        let k;
-        for (k in query.OPTIONS) {
-            keys.push(k);
-        }
-        if (keys[1] === "ORDER") {
-            let d = query.OPTIONS.ORDER.valueOf();
-            let splitTest = d.split("_", 2);
-            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
-                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
-                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
-                splitTest[1] === "furniture") {
-                if (!RoomKeyValidity.checkInCol(query, splitTest[1])) {
+            if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
+                splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
+                splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
+                splitTest[1] !== "furniture" && splitTest[1] !== "href") {
+                if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                     return false;
                 }
-            } else {
-                return false;
             }
+        }
+        if (!RoomKeyValidity.keyOptions(query)) {
+             return false;
         }
         let q = query.WHERE;
         let size = Object.keys(q).length;
@@ -46,6 +33,46 @@ export default class RoomKeyValidity {
                 return false;
             }
         }
+    }
+
+    public static isRoomsKey(splitTest: any): boolean {
+        if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
+            splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
+            splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
+            splitTest[1] !== "furniture" && splitTest[1] !== "href") {
+            return false;
+        }
+        return true;
+    }
+
+    public static keyOptions(query: any): boolean {
+        let keys = [];
+        let k;
+        for (k in query.OPTIONS) {
+            keys.push(k);
+        }
+        if (keys[1] === "ORDER") {
+            let d = query.OPTIONS.ORDER.valueOf();
+            if (typeof d === "object") {
+                if (!NewValidity.keyOrderObject(query)) {
+                    return false;
+                }
+            } else {
+                if (/_/.test(d)) {
+                    let splitTest = d.split("_", 2);
+                    if (!RoomKeyValidity.isRoomsKey(splitTest) ||
+                        !RoomKeyValidity.checkInCol(query, splitTest[1])) {
+                        return false;
+                    }
+                } else {
+                    if (!RoomKeyValidity.checkInCol(query, d) &&
+                        !NewValidity.checkIfInApply(query, d)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public static checkInCol(query: any, toCheck: any): boolean {
@@ -93,6 +120,8 @@ export default class RoomKeyValidity {
                 } else {
                     return true;
                 }
+            } else {
+                return true;
             }
         }
     }
@@ -110,12 +139,7 @@ export default class RoomKeyValidity {
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 2);
-            if (splitTest[1] === "lat" || splitTest[1] === "lon" || splitTest[1] === "seats" ||
-                splitTest[1] === "fullname" || splitTest[1] === "shortname" || splitTest[1] === "number" ||
-                splitTest[1] === "name" || splitTest[1] === "address" || splitTest[1] === "type" ||
-                splitTest[1] === "furniture") {
-                //
-            } else {
+            if (!RoomKeyValidity.isRoomsKey(splitTest)) {
                 return false;
             }
         } else {

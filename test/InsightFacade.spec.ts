@@ -31,6 +31,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        rooms: "./test/data/rooms.zip",
         wrongRoot: "./test/data/wrongRoot.zip",
         noJSON: "./test/data/noJSON.zip",
         someValid: "./test/data/someValid.zip",
@@ -98,6 +99,18 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         return expect(futureResult).to.eventually.deep.equal(expected);
     });
 
+    // valid room dataset add
+    it("Should add a valid dataset for rooms", function () {
+        const id: string = "rooms";
+        const expected: string[] = [id];
+        const futureResult: Promise<string[]> = insightFacade.addDataset(
+            id,
+            datasets[id],
+            InsightDatasetKind.Rooms,
+        );
+        return expect(futureResult).to.eventually.deep.equal(expected);
+    });
+
     // invalid id (just whitespace) dataset test
     it("Should reject because of invalid id of whitespace", function () {
         const id: string = "    ";
@@ -142,16 +155,16 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         return expect(futureResult).to.be.rejectedWith(InsightError);
     });
 
-    // invalid kind
-    it("Should reject because the kind is rooms, which is invalid", function () {
-        const id: string = "courses";
-        const futureResult: Promise<string[]> = insightFacade.addDataset(
-            id,
-            datasets[id],
-            InsightDatasetKind.Rooms,
-        );
-        return expect(futureResult).to.be.rejectedWith(InsightError);
-    });
+    // // invalid kind
+    // it("Should reject because the kind is rooms, which is invalid", function () {
+    //     const id: string = "courses";
+    //     const futureResult: Promise<string[]> = insightFacade.addDataset(
+    //         id,
+    //         datasets[id],
+    //         InsightDatasetKind.Rooms,
+    //     );
+    //     return expect(futureResult).to.be.rejectedWith(InsightError);
+    // });
 
     // id already in dataset
     it("Should reject because id is already in dataset", function () {
@@ -434,6 +447,10 @@ describe("InsightFacade PerformQuery", () => {
         courses: {
             path: "./test/data/courses.zip",
             kind: InsightDatasetKind.Courses,
+        },
+        rooms: {
+            path: "./test/data/rooms.zip",
+            kind: InsightDatasetKind.Rooms,
         },
     };
     let insightFacade: InsightFacade;

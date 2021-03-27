@@ -1,21 +1,36 @@
 import RoomKeyValidity from "./RoomKeyValidity";
+import NewValidity from "./NewValidity";
 
 export default class KeyValidity {
-    public static goodKey(query: any): boolean {
-        let a;
-        let b = query.OPTIONS.COLUMNS.valueOf();
-        for (a in b) {
-            let test = b[a];
-            let splitTest = test.split("_", 2);
-            if (splitTest[0] === "rooms") {
-                return RoomKeyValidity.goodRoomKey(query);
-            }
-            if (splitTest[0] === "courses") {
-                return KeyValidity.goodCoursesKey(query);
-            } else {
+    public static goodKey(query: any, typeOfData: string): boolean {
+        if (typeOfData === "rooms") {
+            if (!RoomKeyValidity.goodRoomKey(query)) {
                 return false;
             }
+            if (!RoomKeyValidity.goodField(query)) {
+                return false;
+            }
+        } else {
+            if (typeOfData === "courses") {
+                if (!KeyValidity.goodCoursesKey(query)) {
+                    return false;
+                }
+                if (!KeyValidity.goodField(query)) {
+                    return false;
+                }
+            }
         }
+        return true;
+    }
+
+    public static isCoursesKey(splitTest: any): boolean {
+        if (splitTest[1] !== "dept" && splitTest[1] !== "id" && splitTest[1] !== "avg" &&
+            splitTest[1] !== "instructor" && splitTest[1] !== "title" && splitTest[1] !== "pass" &&
+            splitTest[1] !== "fail" && splitTest[1] !== "audit" && splitTest[1] !== "uuid" &&
+            splitTest[1] !== "year") {
+            return false;
+        }
+        return true;
     }
 
     public static goodCoursesKey(query: any): boolean {
@@ -23,34 +38,19 @@ export default class KeyValidity {
         let b = query.OPTIONS.COLUMNS.valueOf();
         for (a in b) {
             let test = b[a];
-            let splitTest = test.split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid" ||
-                splitTest[1] === "year") {
-                //
-            } else {
-                return false;
-            }
-        }
-        let keys = [];
-        let k;
-        for (k in query.OPTIONS) {
-            keys.push(k);
-        }
-        if (keys[1] === "ORDER") {
-            let d = query.OPTIONS.ORDER.valueOf();
-            let splitTest = d.split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid" ||
-                splitTest[1] === "year") {
-                if (!KeyValidity.checkInCol(query, splitTest[1])) {
+            if ((/_/.test(test))) {
+                let splitTest = test.split("_", 2);
+                if (!KeyValidity.isCoursesKey(splitTest)) {
                     return false;
                 }
             } else {
-                return false;
+                if (!NewValidity.checkIfInApply(query, test)) {
+                    return false;
+                }
             }
+        }
+        if (!KeyValidity.keyOptions(query)) {
+            return false;
         }
         let q = query.WHERE;
         let size = Object.keys(q).length;
@@ -65,6 +65,36 @@ export default class KeyValidity {
                 return false;
             }
         }
+    }
+
+    public static keyOptions(query: any): boolean {
+        let keys = [];
+        let k;
+        for (k in query.OPTIONS) {
+            keys.push(k);
+        }
+        if (keys[1] === "ORDER") {
+            let d = query.OPTIONS.ORDER.valueOf();
+            if (typeof d === "object") {
+                if (!NewValidity.keyOrderObject(query)) {
+                    return false;
+                }
+            } else {
+                if (/_/.test(d)) {
+                    let splitTest = d.split("_", 2);
+                    if (!KeyValidity.isCoursesKey(splitTest) ||
+                        !KeyValidity.checkInCol(query, splitTest[1])) {
+                        return false;
+                    }
+                } else {
+                    if (!KeyValidity.checkInCol(query, d) &&
+                        !NewValidity.checkIfInApply(query, d)) {
+                            return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public static checkInCol(query: any, toCheck: any): boolean {
@@ -129,12 +159,7 @@ export default class KeyValidity {
             let test = Object.values(query);
             let test2 = Object.keys(test[0]);
             let splitTest = test2[0].split("_", 2);
-            if (splitTest[1] === "dept" || splitTest[1] === "id" || splitTest[1] === "avg" ||
-                splitTest[1] === "instructor" || splitTest[1] === "title" || splitTest[1] === "pass" ||
-                splitTest[1] === "fail" || splitTest[1] === "audit" || splitTest[1] === "uuid"
-                || splitTest[1] === "year") {
-                //
-            } else {
+            if (!KeyValidity.isCoursesKey(splitTest)) {
                 return false;
             }
         } else {
