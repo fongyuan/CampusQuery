@@ -1,0 +1,67 @@
+{
+    "title": "SELECT dept, avg WHERE avg > 97",
+    "query": {
+        "WHERE": {
+            "GT": {
+                "courses_avg": 98
+            }
+        },
+        "OPTIONS": {
+            "COLUMNS": [
+                "courses_title",
+                "countAvg"
+            ]
+        },
+        "TRANSFORMATIONS": {
+            "GROUP": [
+                "courses_title"
+            ],
+            "APPLY": [
+                {
+                    "countAvg": {
+                        "COUNT": "courses_avg"
+                    }
+                }
+            ]
+        }
+    },
+    "isQueryValid": true,
+    "result": [
+        {
+            "courses_title": "career planning",
+            "countAvg": 1
+        },
+        {
+            "courses_title": "multimedia sys",
+            "countAvg": 1
+        },
+        {
+            "courses_title": "assess lrn diffi",
+            "countAvg": 3
+        },
+        {
+            "courses_title": "educ stds autism",
+            "countAvg": 3
+        },
+        {
+            "courses_title": "dev el sk df&hrd",
+            "countAvg": 1
+        },
+        {
+            "courses_title": "algb topology i",
+            "countAvg": 1
+        },
+        {
+            "courses_title": "cl pro prim care",
+            "countAvg": 2
+        },
+        {
+            "courses_title": "fam nrs pract",
+            "countAvg": 2
+        },
+        {
+            "courses_title": "work int health",
+            "countAvg": 1
+        }
+    ]
+}

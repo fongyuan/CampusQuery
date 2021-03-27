@@ -1,4 +1,21 @@
 export default class Comparators {
+
+    public static getDatasetName(query: any): string {
+        let col = query.OPTIONS.COLUMNS[0];
+        let splitId;
+        if (!(/_/.test(col))) {
+            let a = query.TRANSFORMATIONS.APPLY.valueOf();
+            let test = Object.values(a[0])[0];
+            splitId = Object.values(test)[0];
+        } else {
+            splitId = col;
+        }
+        let inputString = splitId.split("_", 1);
+        let name = inputString[0];
+        let path = "../../data/";
+        return path.concat(name);
+    }
+
     public static andCombine(arr1: any, arr2: any): any[] {
         if (arr1.length > arr2.length) {
             const testC = arr2.filter((value: any) => arr1.includes(value));
