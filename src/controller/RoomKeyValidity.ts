@@ -18,7 +18,7 @@ export default class RoomKeyValidity {
             }
         }
         if (!RoomKeyValidity.keyOptions(query)) {
-            return false;
+             return false;
         }
         let q = query.WHERE;
         let size = Object.keys(q).length;

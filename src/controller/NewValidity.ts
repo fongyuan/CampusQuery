@@ -14,6 +14,17 @@ export default class NewValidity {
         return false;
     }
 
+    public static grabIdFromApply(query: any, applyKey: string): string {
+        let y = query.TRANSFORMATIONS.APPLY.valueOf();
+        for (const x in y) {
+            let test = Object.keys(y[x]);
+            if (test[0] === applyKey) {
+                let k = Object.values(y[x])[0];
+                return Object.values(k)[0];
+            }
+        }
+    }
+
     public static checkIfInGroup(query: any, splitTest: any): boolean {
         let y;
         y = query.TRANSFORMATIONS.GROUP.valueOf();
@@ -42,6 +53,9 @@ export default class NewValidity {
     }
 
     public static groupCheck(query: any, splitId: any): boolean {
+        if (!Validity.notEmpty(query.TRANSFORMATIONS.GROUP)) {
+            return false;
+        }
         let group = query.TRANSFORMATIONS.GROUP;
         for (const element of group) {
             if (typeof element !== "string" || element === null || element === undefined) {
@@ -62,6 +76,9 @@ export default class NewValidity {
     }
 
     public static applyCheck(query: any, splitId: any): boolean {
+        if (!Validity.notEmpty(query.TRANSFORMATIONS.APPLY)) {
+            return false;
+        }
         let apply = query.TRANSFORMATIONS.APPLY.valueOf();
         for (const element of apply) {
             if (typeof element !== "object" || element === null || element === undefined) {
@@ -133,14 +150,7 @@ export default class NewValidity {
         let keysToCheck = query.OPTIONS.ORDER.keys.valueOf();
         for (const x in keysToCheck) {
             if (!NewValidity.checkIfInApply(query, keysToCheck[x])) {
-                let splitTest = keysToCheck[x].split("_", 2);
-                if (splitTest[1] !== "lat" && splitTest[1] !== "lon" && splitTest[1] !== "seats" &&
-                    splitTest[1] !== "fullname" && splitTest[1] !== "shortname" && splitTest[1] !== "number" &&
-                    splitTest[1] !== "name" && splitTest[1] !== "address" && splitTest[1] !== "type" &&
-                    splitTest[1] !== "furniture" && splitTest[1] !== "avg" && splitTest[1] !== "pass" &&
-                    splitTest[1] !== "faiL" && splitTest[1] !== "audit" && splitTest[1] !== "year" &&
-                    splitTest[1] !== "dept" && splitTest[1] !== "id" && splitTest[1] !== "instructor" &&
-                    splitTest[1] !== "title" && splitTest[1] !== "href") {
+                if (!NewValidity.inCol(query, keysToCheck[x])) {
                     return false;
                 }
             }

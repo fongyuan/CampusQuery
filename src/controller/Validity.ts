@@ -1,4 +1,3 @@
-import KeyValidity from "./KeyValidity";
 import NewValidity from "./NewValidity";
 
 export default class Validity {
@@ -25,8 +24,7 @@ export default class Validity {
     }
 
     public static notEmpty(query: any): boolean {
-        let k;
-        for (k in query) {
+        for (const k in query) {
             if (query.hasOwnProperty(k)) {
                 return true;
             }
@@ -74,9 +72,8 @@ export default class Validity {
             if (typeof type !== "object") {
                 return false;
             }
-            let s;
             let keys = [];
-            for (s in query.TRANSFORMATIONS) {
+            for (const s in query.TRANSFORMATIONS) {
                 keys.push(s);
             }
             if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
@@ -106,25 +103,30 @@ export default class Validity {
 
     public static datasetCheck(query: any): boolean {
         let keys = [];
-        let k;
-        for (k in query.OPTIONS) {
+        for (const k in query.OPTIONS) {
             keys.push(k);
         }
         if (keys[0] !== "COLUMNS") {
             return false;
         }
         let cols = query.OPTIONS.COLUMNS;
+        let setId;
         for (const element of cols) {
             if (typeof element !== "string" || element === null || element === undefined) {
                 return false;
             }
+            if (/_/.test(element)) {
+                setId = element;
+            }
         }
-        let setId = query.OPTIONS.COLUMNS[0];
+        if (setId === undefined) {
+            if (NewValidity.checkIfInApply(query, cols[0])) {
+                setId = NewValidity.grabIdFromApply(query, cols[0]);
+            }
+        }
         let splitId = setId.split("_", 1);
-        let y;
-        y = query.OPTIONS.COLUMNS.valueOf();
-        let x;
-        for (x in y) {
+        let y = query.OPTIONS.COLUMNS.valueOf();
+        for (const x in y) {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
@@ -143,6 +145,10 @@ export default class Validity {
                 }
             }
         }
+        return Validity.datasetCheck2(query, splitId, keys);
+    }
+
+    public static datasetCheck2(query: any, splitId: any, keys: any): boolean {
         if (!Validity.datasetOption(query, splitId[0], keys)) {
             return false;
         }
@@ -188,13 +194,12 @@ export default class Validity {
     }
 
     public static datasetWhere(query: any, splitId: string): boolean {
-        let q = query.WHERE;
-        let size = Object.keys(q).length;
+        let size = Object.keys(query.WHERE).length;
         if (size === 0) {
             return true;
         }
         if (size > 0) {
-            let bool = this.recurse(q, splitId, query);
+            let bool = this.recurse(query.WHERE, splitId, query);
             if (bool) {
                 return true;
             } else {
@@ -253,8 +258,7 @@ export default class Validity {
                 return false;
             }
             let keys = [];
-            let k;
-            for (k in query) {
+            for (const k in query) {
                 keys.push(k);
             }
             let inside = Object.values(query);
