@@ -2,12 +2,13 @@ import * as fs from "fs";
 import {resolve as pathResolve} from "path";
 import {InsightError, ResultTooLargeError} from "./IInsightFacade";
 import Comparators from "./Comparators";
-import Validity from "./Validity";
 import ApplyFunctions from "./ApplyFunctions";
 import KeyValidity from "./KeyValidity";
+import Sort from "./Sort";
+import NewValidity from "./NewValidity";
 
 export default class ExecuteQ {
-    private static queryQ: any;
+    public static queryQ: any;
     private static variable2: Map<any, any>;
 
     public static execute(query: any): any {
@@ -29,7 +30,7 @@ export default class ExecuteQ {
                 return Promise.reject(new InsightError());
             }
             const variable: any[] = this.filter(query, temp, finalResult);
-            if (Validity.hasTransform(query)) {
+            if (NewValidity.hasTransform(query)) {
                 ExecuteQ.variable2 = this.group(query, variable);
                 this.applyFunc(query);
                 let count = this.variable2.size;
@@ -229,11 +230,10 @@ export default class ExecuteQ {
             let orderItem = query.OPTIONS.ORDER.valueOf();
             if (typeof orderItem === "object") {
                 if (query.OPTIONS.ORDER.dir === "UP") {
-                    result.sort(this.upObjectSort);
+                    result.sort(Sort.upObjectSort);
                 } else {
-                    result.sort(this.downObjectSort);
+                    result.sort(Sort.downObjectSort);
                 }
-                // result.sort(this.objectSort);
             } else {
                 if (query.OPTIONS.ORDER.length > 0) {
                     result.sort(this.numSort);
@@ -256,34 +256,6 @@ export default class ExecuteQ {
             return 0;
         } else {
             return n2 < m2 ? -1 : 1;
-        }
-    }
-
-    public static upObjectSort(n: any, m: any) {
-        let qq = ExecuteQ.queryQ;
-        let qq2 = qq.OPTIONS.ORDER.keys.valueOf();
-        for (const a in qq2) {
-            let n2 = n[qq2[a]];
-            let m2 = m[qq2[a]];
-            if (n2 === m2) {
-                return 0;
-            } else {
-                return n2 < m2 ? -1 : 1;
-            }
-        }
-    }
-
-    public static downObjectSort(n: any, m: any) {
-        let qq = ExecuteQ.queryQ;
-        let qq2 = qq.OPTIONS.ORDER.keys.valueOf();
-        for (const a in qq2) {
-            let n2 = n[qq2[a]];
-            let m2 = m[qq2[a]];
-            if (n2 === m2) {
-                return 0;
-            } else {
-                return n2 > m2 ? -1 : 1;
-            }
         }
     }
 }
