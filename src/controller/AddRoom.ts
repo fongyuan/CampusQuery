@@ -121,7 +121,7 @@ export default class AddRoom {
         return -1;
     }
 
-    private static createRoom(id: string, rnum: string, cap: number, furn: string,
+    private static createRoom(id: string, rnum: string, cap: string, furn: string,
                               rtype: string, rhref: string, b: any): any {
         let fullname = id + "_fullname";
         let shortname = id + "_shortname";
@@ -153,7 +153,7 @@ export default class AddRoom {
     private static findRoom(element: any, id: string, building: any): any {
         let roomList: any[] = [];
         let roomNum = "";
-        let roomCap = 0;
+        let roomCap = "0";
         let roomFurn = "";
         let roomType = "";
         let href = "";
