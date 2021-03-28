@@ -11,10 +11,13 @@ export default class Validity {
         if (!this.hasOptions(query)) {
             return false;
         }
+        if (!this.whereOptionsOrder(query)) {
+            return false;
+        }
         if (!this.hasColumns(query)) {
             return false;
         }
-        if (!this.validTransform(query)) {
+        if (!NewValidity.validTransform(query)) {
             return false;
         }
         if (!this.validKeys(query)) {
@@ -36,15 +39,6 @@ export default class Validity {
         return Validity.notEmpty(query);
     }
 
-    public static hasOptions(query: any): boolean {
-        for (const k in query) {
-            if (k === "OPTIONS") {
-                return Validity.notEmpty(query.OPTIONS);
-            }
-        }
-        return false;
-    }
-
     public static hasWhere(query: any): boolean {
         for (const k in query) {
             if (k === "WHERE") {
@@ -54,41 +48,30 @@ export default class Validity {
         return false;
     }
 
-    public static hasColumns(query: any): boolean {
-        for (const k in query.OPTIONS) {
-            if (k === "COLUMNS") {
-                return Validity.notEmpty(query.OPTIONS.COLUMNS);
+    public static hasOptions(query: any): boolean {
+        for (const k in query) {
+            if (k === "OPTIONS") {
+                return Validity.notEmpty(query.OPTIONS);
             }
         }
         return false;
     }
 
-    public static validTransform(query: any): boolean {
-        if (this.hasTransform(query)) {
-            if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
-                return false;
-            }
-            let type = query.TRANSFORMATIONS.valueOf();
-            if (typeof type !== "object") {
-                return false;
-            }
-            let keys = [];
-            for (const s in query.TRANSFORMATIONS) {
-                keys.push(s);
-            }
-            if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
-                return false;
-            } else {
-                return true;
-            }
+    public static whereOptionsOrder(query: any): boolean {
+        let keys = [];
+        for (const s in query) {
+            keys.push(s);
+        }
+        if (keys[0] !== "WHERE" || keys[1] !== "OPTIONS") {
+            return false;
         }
         return true;
     }
 
-    public static hasTransform(query: any): boolean {
-        for (const k in query) {
-            if (k === "TRANSFORMATIONS") {
-                return true;
+    public static hasColumns(query: any): boolean {
+        for (const k in query.OPTIONS) {
+            if (k === "COLUMNS") {
+                return Validity.notEmpty(query.OPTIONS.COLUMNS);
             }
         }
         return false;
@@ -130,7 +113,7 @@ export default class Validity {
             let test = y[x];
             let splitTest = test.split("_", 1);
             if (splitTest[0] !== splitId[0]) {
-                if (this.hasTransform(query)) {
+                if (NewValidity.hasTransform(query)) {
                     if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                         return false;
                     }
@@ -138,7 +121,7 @@ export default class Validity {
                     return false;
                 }
             } else {
-                if (this.hasTransform(query)) {
+                if (NewValidity.hasTransform(query)) {
                     if (!NewValidity.checkIfInGroup(query, test)) {
                         return false;
                     }
@@ -152,7 +135,7 @@ export default class Validity {
         if (!Validity.datasetOption(query, splitId[0], keys)) {
             return false;
         }
-        if (this.hasTransform(query)) {
+        if (NewValidity.hasTransform(query)) {
             if (!NewValidity.datasetTransform(query, splitId[0])) {
                 return false;
             }
@@ -173,7 +156,7 @@ export default class Validity {
             } else {
                 let splitTest = test.split("_", 1);
                 if (splitId !== splitTest[0]) {
-                    if (this.hasTransform(query)) {
+                    if (NewValidity.hasTransform(query)) {
                         if (!NewValidity.checkIfInApply(query, splitTest[0])) {
                             return false;
                         }

@@ -1,6 +1,44 @@
 import Validity from "./Validity";
 
 export default class NewValidity {
+    public static validTransform(query: any): boolean {
+        if (this.hasTransform(query)) {
+            if (!Validity.notEmpty(query.TRANSFORMATIONS)) {
+                return false;
+            }
+            let type = query.TRANSFORMATIONS.valueOf();
+            if (typeof type !== "object") {
+                return false;
+            }
+            let keys2 = [];
+            for (const s in query) {
+                keys2.push(s);
+            }
+            if (keys2[2] !== "TRANSFORMATIONS") {
+                return false;
+            }
+            let keys = [];
+            for (const s in query.TRANSFORMATIONS) {
+                keys.push(s);
+            }
+            if (keys.length !== 2 || keys[0] !== "GROUP" || keys[1] !== "APPLY") {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
+    }
+
+    public static hasTransform(query: any): boolean {
+        for (const k in query) {
+            if (k === "TRANSFORMATIONS") {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static checkIfInApply(query: any, splitTest: any): boolean {
         let y;
         y = query.TRANSFORMATIONS.APPLY.valueOf();
