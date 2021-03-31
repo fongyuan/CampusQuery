@@ -5,15 +5,18 @@ const teamURL = "http://cs310.students.cs.ubc.ca:11316/api/v1/project_team160/";
 export default class AddRoom {
     public static roomAdd(zip: any, content: string, roomOut: any[], id: string, files: string[]): Promise<string[]> {
         const parse5 = require("parse5");
-        let buildings: any;
+        let buildings: any[];
         let urlList: any[] = [];
         let roomsPromise: any[] = [];
         return new Promise((resolve, reject) => {
             zip.loadAsync(content, {base64: true}).then(() => {
+                if (zip.folder("rooms").file("index.htm") === null) {
+                    return reject(new InsightError());
+                }
                 zip.folder("rooms").file("index.htm").async("string").then((data: any) => {
                     let index = parse5.parse(data);
                     buildings = this.findBuildingsHelper(index, id);
-                    urlList = this.getUrlList(buildings);
+                    urlList = this.getUrlList(buildings, id);
                     return;
                 }).then(() => {
                     let list: any[] = [];
@@ -25,20 +28,10 @@ export default class AddRoom {
                     }
                     // from https://stackoverflow.com/questions/36759061/how-to-chain-a-promise-all-with-other-promises
                     return Promise.all(list).then((data: any) => {
-                        for (let i = 0; i < buildings.length; i++) {
-                            buildings[i]["lat"] = data[i]["lat"];
-                            buildings[i]["lon"] = data[i]["lon"];
-                        }
+                        this.addGeo(buildings, data);
                     });
                 }).then(() => {
-                    for (let building of buildings) {
-                        let path = "rooms/campus/discover/buildings-and-classrooms/";
-                        let sn = id + "_shortname";
-                        let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
-                            return data;
-                        });
-                        roomsPromise.push(load);
-                    }
+                    this.loadRoomData(buildings, id, zip, roomsPromise);
                     Promise.all(roomsPromise).then((data: any) => {
                         let roomsOut = this.createRoomsOut(id, data, buildings);
                         if (roomsOut.length <= 0) {
@@ -51,6 +44,29 @@ export default class AddRoom {
                 });
             });
         });
+    }
+
+    private static loadRoomData(buildings: any[], id: string, zip: any, roomsPromise: any[]) {
+        for (let building of buildings) {
+            let path = "rooms/campus/discover/buildings-and-classrooms/";
+            let sn = id + "_shortname";
+            if (zip.folder(path).file(building[sn]) === null) {
+                let index = buildings.indexOf(building, 0);
+                buildings.splice(index, 1);
+                continue;
+            }
+            let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
+                return data;
+            });
+            roomsPromise.push(load);
+        }
+    }
+
+    private static addGeo(buildings: any, data: any) {
+        for (let i = 0; i < buildings.length; i++) {
+            buildings[i]["lat"] = data[i]["lat"];
+            buildings[i]["lon"] = data[i]["lon"];
+        }
     }
 
     private static writeToDisk(roomsOut: any, id: string) {
@@ -94,10 +110,10 @@ export default class AddRoom {
         });
     }
 
-    private static getUrlList(buildings: any): any {
+    private static getUrlList(buildings: any, id: string): any {
         let urlList: any[] = [];
         for (let building of buildings) {
-            let addr = building["rooms_address"].replace(/ /g, "%20");
+            let addr = building[id + "_address"].replace(/ /g, "%20");
             let url = teamURL + addr;
             urlList.push(url);
         }
