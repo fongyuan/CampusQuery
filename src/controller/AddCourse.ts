@@ -68,11 +68,11 @@ export default class AddCourse {
         out[pass] = course["Pass"];
         out[fail] = course["Fail"];
         out[audit] = course["Audit"];
-        out[uuid] = course["id"];
+        out[uuid] = String(course["id"]);
         if (course["Section"] === "overall") {
             out[year] = 1990;
         } else {
-            out[year] = course["Year"];
+            out[year] = Number(course["Year"]);
         }
         out[section] = course["Section"];
         out["kind"] = InsightDatasetKind.Courses;
