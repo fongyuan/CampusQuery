@@ -107,7 +107,11 @@ export default class AddRoom {
 
     private static findRoomInfoHelper(element: any, id: string, building: any): any {
         if (element.nodeName === "tbody") {
-            return this.findRoom(element, id, building);
+            if (this.detailsCheck(element, "Room Details")) {
+                return this.findRoom(element, id, building);
+            } else {
+                return -1;
+            }
         }
         // from c2:Intro to HTML parsing https://www.youtube.com/watch?v=pL7-618Vlq8
         if (element.childNodes && element.childNodes.length > 0) {
@@ -119,6 +123,21 @@ export default class AddRoom {
             }
         }
         return -1;
+    }
+
+    private static detailsCheck(element: any, detail: string): any {
+        if (element.nodeName === "a" && element.attrs.length > 1 && element.attrs[1].value === detail) {
+            return true;
+        }
+        if (element.childNodes && element.childNodes.length > 0) {
+            for (let child of element.childNodes) {
+                let recur = this.detailsCheck(child, detail);
+                if (recur) {
+                    return recur;
+                }
+            }
+        }
+        return false;
     }
 
     private static createRoom(id: string, rnum: string, cap: string, furn: string,
@@ -161,28 +180,69 @@ export default class AddRoom {
             if (tr.nodeName === "#text") {
                 continue;
             }
-            for (let td = 0; td < tr.childNodes.length; td++) {
-                if (td === 1) {
-                    roomNum = tr.childNodes[td].childNodes[1].childNodes[0].value;
-                } else if (td === 3) {
-                    roomCap  = tr.childNodes[td].childNodes[0].value.trim();
-                } else if (td === 5) {
-                    roomFurn  = tr.childNodes[td].childNodes[0].value.trim();
-                } else if (td === 7) {
-                    roomType  = tr.childNodes[td].childNodes[0].value.trim();
-                } else if (td === 9) {
-                    href  = tr.childNodes[td].childNodes[1].attrs[0].value;
-                }
-            }
+            roomNum = this.findRoomNum(tr, "Room Details");
+            roomCap = this.findRoomDetails(tr, "room-capacity");
+            roomFurn = this.findRoomDetails(tr, "room-furniture");
+            roomType = this.findRoomDetails(tr, "room-type");
+            href  = this.findRoomHref(tr, "href");
             let room = this.createRoom(id, roomNum, roomCap, roomFurn, roomType, href, building);
             roomList.push(room);
         }
         return roomList;
     }
 
+    private static findRoomNum(element: any, detail: string): any {
+        if (element.nodeName === "a" && element.attrs[1].value === detail) {
+            return element.childNodes[0].value.trim();
+        }
+        if (element.childNodes && element.childNodes.length > 0) {
+            for (let child of element.childNodes) {
+                let recur = this.findRoomNum(child, detail);
+                if (recur !== "") {
+                    return recur;
+                }
+            }
+        }
+        return "";
+    }
+
+    private static findRoomDetails(element: any, detail: string): any {
+        if (element.nodeName === "td" && element.attrs[0].value.includes(detail)) {
+            return element.childNodes[0].value.trim();
+        }
+        if (element.childNodes && element.childNodes.length > 0) {
+            for (let child of element.childNodes) {
+                let recur = this.findRoomDetails(child, detail);
+                if (recur !== "") {
+                    return recur;
+                }
+            }
+        }
+        return "";
+    }
+
+    private static findRoomHref(element: any, detail: string): any {
+        if (element.nodeName === "a" && element.attrs[0].name === detail) {
+            return element.attrs[0].value.trim();
+        }
+        if (element.childNodes && element.childNodes.length > 0) {
+            for (let child of element.childNodes) {
+                let recur = this.findRoomHref(child, detail);
+                if (recur !== "") {
+                    return recur;
+                }
+            }
+        }
+        return "";
+    }
+
     private static findBuildingsHelper(element: any, id: string): any {
         if (element.nodeName === "tbody") {
-            return this.findBuildings(element, id);
+            if (this.detailsCheck(element, "Building Details and Map")) {
+                return this.findBuildings(element, id);
+            } else {
+                return -1;
+            }
         }
         // from c2:Intro to HTML parsing https://www.youtube.com/watch?v=pL7-618Vlq8
         if (element.childNodes && element.childNodes.length > 0) {
