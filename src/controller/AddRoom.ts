@@ -8,7 +8,6 @@ export default class AddRoom {
         let buildings: any;
         let urlList: any[] = [];
         let roomsPromise: any[] = [];
-        let roomsHTML: any[] = [];
         return new Promise((resolve, reject) => {
             zip.loadAsync(content, {base64: true}).then(() => {
                 zip.folder("rooms").file("index.htm").async("string").then((data: any) => {
@@ -36,12 +35,12 @@ export default class AddRoom {
                         let path = "rooms/campus/discover/buildings-and-classrooms/";
                         let sn = id + "_shortname";
                         let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
-                            roomsHTML.push(data);
+                            return data;
                         });
                         roomsPromise.push(load);
                     }
-                    Promise.all(roomsPromise).then(() => {
-                        let roomsOut = this.createRoomsOut(id, roomsHTML, buildings);
+                    Promise.all(roomsPromise).then((data: any) => {
+                        let roomsOut = this.createRoomsOut(id, data, buildings);
                         if (roomsOut.length <= 0) {
                             reject(new InsightError());
                         }
