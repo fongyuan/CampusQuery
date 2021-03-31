@@ -8,7 +8,7 @@ export default class Sort {
         let n2 = n[qq2[a]];
         let m2 = m[qq2[a]];
         if (n2 === m2) {
-            if (a < (qq2.length - 1)) {
+            if (a < qq2.length - 1) {
                 return Sort.recurseUpObjectSort(n, m, a + 1);
             } else {
                 return 0;
@@ -24,7 +24,7 @@ export default class Sort {
         let n2 = n[qq2[a]];
         let m2 = m[qq2[a]];
         if (n2 === m2) {
-            if (a < (qq2.length - 1)) {
+            if (a < qq2.length - 1) {
                 Sort.recurseUpObjectSort(n, m, a + 1);
             } else {
                 return 0;
@@ -41,7 +41,7 @@ export default class Sort {
         let n2 = n[qq2[a]];
         let m2 = m[qq2[a]];
         if (n2 === m2) {
-            if (a < (qq2.length - 1)) {
+            if (a < qq2.length - 1) {
                 return Sort.recurseDownObjectSort(n, m, a + 1);
             } else {
                 return 0;
@@ -57,7 +57,7 @@ export default class Sort {
         let n2 = n[qq2[a]];
         let m2 = m[qq2[a]];
         if (n2 === m2) {
-            if (a < (qq2.length - 1)) {
+            if (a < qq2.length - 1) {
                 Sort.recurseDownObjectSort(n, m, a + 1);
             } else {
                 return 0;
