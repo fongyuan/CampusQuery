@@ -47,14 +47,18 @@ export default class AddRoom {
     }
 
     private static loadRoomData(buildings: any[], id: string, zip: any, roomsPromise: any[]) {
-        for (let building of buildings) {
-            let path = "rooms/campus/discover/buildings-and-classrooms/";
-            let sn = id + "_shortname";
+        let path = "rooms/campus/discover/buildings-and-classrooms/";
+        let sn = id + "_shortname";
+        let index: any[] = [];
+        buildings.forEach((building) => {
             if (zip.folder(path).file(building[sn]) === null) {
-                let index = buildings.indexOf(building, 0);
-                buildings.splice(index, 1);
-                continue;
+                index.push(buildings.indexOf(building, 0));
             }
+        });
+        for (let i = index.length - 1; i >= 0; i--) {
+            buildings.splice(index[i], 1);
+        }
+        for (let building of buildings) {
             let load = zip.folder(path).file(building[sn]).async("string").then((data: any) => {
                 return data;
             });
@@ -128,7 +132,6 @@ export default class AddRoom {
                 return -1;
             }
         }
-        // from c2:Intro to HTML parsing https://www.youtube.com/watch?v=pL7-618Vlq8
         if (element.childNodes && element.childNodes.length > 0) {
             for (let child of element.childNodes) {
                 let recur = this.findRoomInfoHelper(child, id, building);
@@ -259,7 +262,6 @@ export default class AddRoom {
                 return -1;
             }
         }
-        // from c2:Intro to HTML parsing https://www.youtube.com/watch?v=pL7-618Vlq8
         if (element.childNodes && element.childNodes.length > 0) {
             for (let child of element.childNodes) {
                 let recur = this.findBuildingsHelper(child, id);

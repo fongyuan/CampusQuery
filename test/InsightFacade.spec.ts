@@ -34,6 +34,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         rooms: "./test/data/rooms.zip",
         noIndex: "./test/data/noIndex.zip",
         missingBuilding: "./test/data/missingBuilding.zip",
+        badGeo: "./test/data/badGeo.zip",
         wrongRoot: "./test/data/wrongRoot.zip",
         noJSON: "./test/data/noJSON.zip",
         someValid: "./test/data/someValid.zip",
@@ -115,6 +116,17 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
 
     it("missing building file, but should still be valid", function () {
         const id: string = "missingBuilding";
+        const expected: string[] = [id];
+        const futureResult: Promise<string[]> = insightFacade.addDataset(
+            id,
+            datasets[id],
+            InsightDatasetKind.Rooms,
+        );
+        return expect(futureResult).to.eventually.deep.equal(expected);
+    });
+
+    it("bad geo, but still valid", function () {
+        const id: string = "badGeo";
         const expected: string[] = [id];
         const futureResult: Promise<string[]> = insightFacade.addDataset(
             id,
