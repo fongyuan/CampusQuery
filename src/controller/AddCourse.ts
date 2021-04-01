@@ -70,7 +70,7 @@ export default class AddCourse {
         out[audit] = course["Audit"];
         out[uuid] = String(course["id"]);
         if (course["Section"] === "overall") {
-            out[year] = 1990;
+            out[year] = 1900;
         } else {
             out[year] = Number(course["Year"]);
         }
