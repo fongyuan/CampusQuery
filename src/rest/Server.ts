@@ -15,7 +15,6 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
-    private insight: InsightFacade;
     private static insight: InsightFacade = new InsightFacade();
 
     constructor(port: number) {
@@ -133,7 +132,7 @@ export default class Server {
                 }
             });
         } catch (err) {
-            res.json(400, {error: err.message});
+            res.json(400, {error: err});
         }
         return next();
     }
@@ -148,7 +147,7 @@ export default class Server {
                 res.json(400, {error: err.message});
             });
         } catch (err) {
-            res.json(400, {error: err.message});
+            res.json(400, {error: err});
         }
         return next();
     }
@@ -159,7 +158,7 @@ export default class Server {
                 res.json(200, {result: result});
             });
         } catch (err) {
-            res.json(400, {error: err.message});
+            res.json(400, {error: err});
         }
         return next();
     }
