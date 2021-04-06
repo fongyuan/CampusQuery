@@ -108,12 +108,12 @@ export default class Server {
         let dataset = data.toString("base64");
         try {
             Server.insight.addDataset(id, dataset, kind).then((result) => {
-            res.json(200, {result: result});
+                res.json(200, {result: result});
             }).catch((err) => {
-                res.json(400, {error: err});
+                res.json(400, {error: err.message});
             });
         } catch (err) {
-            res.json(400, {error: err});
+            res.json(400, {error: err.message});
         }
         return next();
     }
@@ -122,16 +122,18 @@ export default class Server {
         let id = req.params.id;
         try {
             Server.insight.removeDataset(id).then ((result) => {
-               res.json(200, {result: result});
+                res.json(200, {result: result});
             }).catch((err) => {
                 if (err instanceof InsightError) {
-                    res.json(400, {error: err});
+                    res.json(400, {error: err.message});
                 } else if (err instanceof NotFoundError) {
-                    res.json(404, {error: err});
+                    res.json(404, {error: err.message});
+                } else {
+                    res.json(500, {error: err.message});
                 }
             });
         } catch (err) {
-            res.json(400, {error: err});
+            res.json(400, {error: err.message});
         }
         return next();
     }
@@ -143,10 +145,10 @@ export default class Server {
             Server.insight.performQuery(query).then((result) => {
                 res.json(200, {result: result});
             }).catch((err) => {
-                res.json(400, {error: err});
+                res.json(400, {error: err.message});
             });
         } catch (err) {
-            res.json(400, {error: err});
+            res.json(400, {error: err.message});
         }
         return next();
     }
@@ -157,7 +159,7 @@ export default class Server {
                 res.json(200, {result: result});
             });
         } catch (err) {
-            res.json(400, {error: err});
+            res.json(400, {error: err.message});
         }
         return next();
     }
