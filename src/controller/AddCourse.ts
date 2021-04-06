@@ -13,11 +13,11 @@ export default class AddCourse {
                 });
                 Promise.all(list).then((data: any) => {
                     if (list.length <= 0) {
-                        reject(new InsightError());
+                        reject(new InsightError("no courses added"));
                     }
                     this.parseJSON(list, data, courseOut, id);
                     if (courseOut.length <= 0) {
-                        reject(new InsightError());
+                        reject(new InsightError("no courses added"));
                     }
                     let output = JSON.stringify(courseOut);
                     let path = "./data/" + id;
