@@ -11,7 +11,7 @@ export default class AddRoom {
         return new Promise((resolve, reject) => {
             zip.loadAsync(content, {base64: true}).then(() => {
                 if (zip.folder("rooms").file("index.htm") === null) {
-                    return reject(new InsightError());
+                    return reject(new InsightError("no index.htm found"));
                 }
                 zip.folder("rooms").file("index.htm").async("string").then((data: any) => {
                     let index = parse5.parse(data);
@@ -35,7 +35,7 @@ export default class AddRoom {
                     Promise.all(roomsPromise).then((data: any) => {
                         let roomsOut = this.createRoomsOut(id, data, buildings);
                         if (roomsOut.length <= 0) {
-                            reject(new InsightError());
+                            reject(new InsightError("no rooms added"));
                         }
                         this.writeToDisk(roomsOut, id);
                         files.push(id);

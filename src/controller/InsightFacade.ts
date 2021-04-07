@@ -29,14 +29,14 @@ export default class InsightFacade implements IInsightFacade {
         let courseOut: any[] = [];
         let roomOut: any[] = [];
         if (!this.checkKind(kind)) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("improper kind"));
         }
         let files = fs.readdirSync("./data");
         if (files.includes(id)) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("duplicate id"));
         }
         if (!this.idValidation(id)) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("invalid id name"));
         }
         if (kind === InsightDatasetKind.Courses) {
             return AddCourse.courseAdd(zip, content, courseOut, id, files);
@@ -54,24 +54,24 @@ export default class InsightFacade implements IInsightFacade {
 
     public removeDataset(id: string): Promise<string> {
         if (!this.idValidation(id)) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("invalid id name"));
         }
         let files = fs.readdirSync("./data");
         if (!files.includes(id)) {
-            return Promise.reject(new NotFoundError());
+            return Promise.reject(new NotFoundError("dataset not found"));
         }
         let path = "./data/" + id;
         try {
             fs.unlinkSync(path);
         } catch (err) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("error deleting file"));
         }
         return Promise.resolve(id);
     }
 
     public performQuery(query: any): Promise<any[]> {
         if (!Validity.isValid(query)) {
-            return Promise.reject(new InsightError());
+            return Promise.reject(new InsightError("invalid query"));
         }
         return ExecuteQ.execute(query);
     }

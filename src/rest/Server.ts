@@ -5,6 +5,8 @@
 import fs = require("fs");
 import restify = require("restify");
 import Log from "../Util";
+import {InsightDatasetKind, InsightError, NotFoundError} from "../controller/IInsightFacade";
+import InsightFacade from "../controller/InsightFacade";
 
 /**
  * This configures the REST endpoints for the server.
@@ -13,6 +15,7 @@ export default class Server {
 
     private port: number;
     private rest: restify.Server;
+    private static insight: InsightFacade = new InsightFacade();
 
     constructor(port: number) {
         Log.info("Server::<init>( " + port + " )");
@@ -64,6 +67,10 @@ export default class Server {
                 that.rest.get("/echo/:msg", Server.echo);
 
                 // NOTE: your endpoints should go here
+                that.rest.put("/dataset/:id/:kind", Server.put);
+                that.rest.del("/dataset/:id", Server.del);
+                that.rest.post("/query", Server.post);
+                that.rest.get("/datasets", Server.get);
 
                 // This must be the last endpoint!
                 that.rest.get("/.*", Server.getStatic);
@@ -85,6 +92,75 @@ export default class Server {
                 reject(err);
             }
         });
+    }
+
+    private static put(req: restify.Request, res: restify.Response, next: restify.Next) {
+        let id = req.params.id;
+        let kind;
+        if (req.params.kind === "courses") {
+            kind = InsightDatasetKind.Courses;
+        } else if (req.params.kind === "rooms") {
+            kind = InsightDatasetKind.Rooms;
+        }
+        // from https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
+        let data = req.body;
+        let dataset = data.toString("base64");
+        try {
+            Server.insight.addDataset(id, dataset, kind).then((result) => {
+                res.json(200, {result: result});
+            }).catch((err) => {
+                res.json(400, {error: err.message});
+            });
+        } catch (err) {
+            res.json(400, {error: err.message});
+        }
+        return next();
+    }
+
+    private static del(req: restify.Request, res: restify.Response, next: restify.Next) {
+        let id = req.params.id;
+        try {
+            Server.insight.removeDataset(id).then ((result) => {
+                res.json(200, {result: result});
+            }).catch((err) => {
+                if (err instanceof InsightError) {
+                    res.json(400, {error: err.message});
+                } else if (err instanceof NotFoundError) {
+                    res.json(404, {error: err.message});
+                } else {
+                    res.json(500, {error: err.message});
+                }
+            });
+        } catch (err) {
+            res.json(400, {error: err});
+        }
+        return next();
+    }
+
+    private static post(req: restify.Request, res: restify.Response, next: restify.Next) {
+        let data = req.body;
+        let query = data.query;
+        try {
+            Server.insight.performQuery(query).then((result) => {
+                res.json(200, {result: result});
+            }).catch((err) => {
+                res.json(400, {error: err.message});
+            });
+        } catch (err) {
+            res.json(400, {error: err});
+        }
+        return next();
+    }
+
+    private static get(req: restify.Request, res: restify.Response, next: restify.Next) {
+        try {
+            Server.insight.listDatasets().then ((result) => {
+                res.json(200, {result: result});
+            });
+        } catch (err) {
+            res.json(400, {error: err});
+        }
+        return next();
     }
 
     // The next two methods handle the echo service.
