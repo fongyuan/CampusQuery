@@ -9,6 +9,16 @@ CampusExplorer.sendQuery = (query) => {
         let xmlreq = new XMLHttpRequest();
         xmlreq.open("POST", '/server', true);
         xmlreq.setRequestHeader("Content-Type", "application/json");
+        xmlreq.onload = function () {
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                resolve(JSON.parse(xmlreq.responseText));
+            } else {
+                reject({
+                    status: this.status,
+                    statusText: xmlreq.statusText
+                });
+            }
+        };
         xmlreq.send(JSON.stringify(query));
     });
 };
