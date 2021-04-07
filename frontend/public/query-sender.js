@@ -6,7 +6,9 @@
  */
 CampusExplorer.sendQuery = (query) => {
     return new Promise((resolve, reject) => {
-        // TODO: implement!
-        console.log("CampusExplorer.sendQuery not implemented yet.");
+        let xmlreq = new XMLHttpRequest();
+        xmlreq.open("POST", '/server', true);
+        xmlreq.setRequestHeader("Content-Type", "application/json");
+        xmlreq.send(JSON.stringify(query));
     });
 };
