@@ -130,9 +130,14 @@ CampusExplorer.buildQuery = () => {
     const columns = document.getElementsByClassName("form-group columns");
     let col = columns[conToCheck];
     for (let i = 0; i < col.children[1].children.length; i++) {
-        if (col.children[1].children[i].children[0].defaultChecked === true) {
+        if (col.children[1].children[i].className === "control field" &&
+            col.children[1].children[i].children[0].defaultChecked === true) {
             let cToMap = fieldMapping(col.children[1].children[i].children[0].defaultValue);
             let c = type + "_" + cToMap;
+            allColumn.push(c);
+        } else if (col.children[1].children[i].className === "control transformation"
+            && col.children[1].children[i].children[0].defaultChecked === true) {
+            let c = col.children[1].children[i].children[0].defaultValue;
             allColumn.push(c);
         }
     }
@@ -160,6 +165,47 @@ CampusExplorer.buildQuery = () => {
         optionsObj["ORDER"] = c2Order;
     }
     query["OPTIONS"] = optionsObj;
+    const transformBox = document.getElementsByClassName("transformations-container");
+    if (transformBox[conToCheck].hasChildNodes()) {
+        let transformObj = {};
+        let allGroup = [];
+        const groups = document.getElementsByClassName("form-group groups");
+        let grp = groups[conToCheck];
+        for (let i = 0; i < grp.children[1].children.length; i++) {
+            if (grp.children[1].children[i].className === "control field" &&
+                grp.children[1].children[i].children[0].defaultChecked === true) {
+                let cToMap = fieldMapping(grp.children[1].children[i].children[0].defaultValue);
+                let c = type + "_" + cToMap;
+                allGroup.push(c);
+            }
+        }
+        let applyObj = [];
+        let apply = transformBox[conToCheck];
+        for (let i = 0; i < apply.children.length; i++) {
+            let applyRule = {};
+            let applyToken = {};
+            let title = apply.children[i].children[0].children[0].defaultValue;
+            let operator;
+            for (let j = 0; j < apply.children[i].children[1].children[0].length; j++) {
+                if (apply.children[i].children[1].children[0][j].defaultSelected === true) {
+                    operator = apply.children[i].children[1].children[0][j].label;
+                }
+            }
+            let tokenField;
+            for (let k = 0; k < apply.children[i].children[2].children[0].length; k++) {
+                if (apply.children[i].children[2].children[0][k].defaultSelected === true) {
+                    let tToMap = fieldMapping(apply.children[i].children[2].children[0][k].label);
+                    tokenField = type + "_" + tToMap;
+                    applyToken[operator] = tokenField;
+                }
+            }
+            applyRule[title] = applyToken;
+            applyObj.push(applyRule);
+        }
+        transformObj["GROUP"] = allGroup;
+        transformObj["APPLY"] = applyObj;
+        query["TRANSFORMATIONS"] = transformObj;
+    }
     return query;
 };
 
