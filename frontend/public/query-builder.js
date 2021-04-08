@@ -20,6 +20,8 @@ CampusExplorer.buildQuery = () => {
         let finalField;
         if (label === "Department") {
             finalField = "dept";
+        } else if (label === "Average") {
+            finalField = "avg";
         } else if (label === "Full Name") {
             finalField = "fullname";
         } else if (label === "Link") {
@@ -61,27 +63,25 @@ CampusExplorer.buildQuery = () => {
                     }
                 }
                 const idField = type + "_" + fieldVal;   // courses_dept
-                const operators = document.getElementsByClassName("control operators");
-                const op = operators[i];
                 let opVal;
-                for (let b = 0; b < op.firstElementChild.options.length; b++) {
-                    if (op.firstElementChild[b].defaultSelected === true) {
-                        opVal = op.firstElementChild[b].label;
+                for (let j = 0; j < con[conToCheck].children[i].childNodes[5].childNodes[1].length; j++) {
+                    if (con[conToCheck].children[i].childNodes[5].childNodes[1][j].defaultSelected === true) {
+                        opVal = con[conToCheck].children[i].childNodes[5].childNodes[1][j].label;
                     }
                 }
-                const textBox = document.getElementsByClassName("control term");
+                const textBox = con[conToCheck].children[i].childNodes[7];
                 let text;
                 if (opVal === "IS") {
-                    text = textBox[i].childNodes[1].defaultValue;
+                    text = textBox.childNodes[1].defaultValue;
                 } else {
-                    text = Number(textBox[i].childNodes[1].defaultValue);
+                    text = Number(textBox.childNodes[1].defaultValue);
                 }
                 let innerObject = {};
                 innerObject[idField] = text;
                 let object = {};
                 object[opVal] = innerObject;   // {IS: {}}
-                const notBox = document.getElementsByClassName("control not");
-                if (notBox[i].children[0].defaultChecked === true) {
+                const notBox = con[conToCheck].children[i].childNodes[1];
+                if (notBox.children[0].defaultChecked === true) {
                     let notObj = {}
                     notObj["NOT"] = object;
                     all.push(notObj);
@@ -94,34 +94,37 @@ CampusExplorer.buildQuery = () => {
             query["WHERE"] = object2;
         } else {
             let fieldVal;
-            const fieldBox = document.getElementsByClassName("control fields");
-            const field = fieldBox[conToCheck];
-            for (let i = 0; i < field.firstElementChild.options.length; i++) {
-                if (field.firstElementChild[i].defaultSelected === true) {
-                    fieldVal = fieldMapping(field.firstElementChild[i].label);
+            for (let j = 0; j < con[conToCheck].children[0].childNodes[3].childNodes[1].length; j++) {
+                if (con[conToCheck].children[0].childNodes[3].childNodes[1][j].defaultSelected === true) {
+                    fieldVal = fieldMapping(con[conToCheck].children[0].childNodes[3].childNodes[1][j].label);
                 }
             }
             const idField = type + "_" + fieldVal;   // courses_dept
-            const operators = document.getElementsByClassName("control operators");
-            const op = operators[0];
             let opVal;
-            for (let i = 0; i < op.firstElementChild.options.length; i++) {
-                if (op.firstElementChild[i].defaultSelected === true) {
-                    opVal = op.firstElementChild[i].label;
+            for (let j = 0; j < con[conToCheck].children[0].childNodes[5].childNodes[1].length; j++) {
+                if (con[conToCheck].children[0].childNodes[5].childNodes[1][j].defaultSelected === true) {
+                    opVal = con[conToCheck].children[0].childNodes[5].childNodes[1][j].label;
                 }
             }
-            const textBox = document.getElementsByClassName("control term");
+            const textBox = con[conToCheck].children[0].childNodes[7];
             let text;
             if (opVal === "IS") {
-                text = textBox[0].childNodes[1].defaultValue;
+                text = textBox.childNodes[1].defaultValue;
             } else {
-                text = Number(textBox[0].childNodes[1].defaultValue);
+                text = Number(textBox.childNodes[1].defaultValue);
             }
             let innerObject = {};
             innerObject[idField] = text;
             let object = {};
             object[opVal] = innerObject;   // {IS: {}}
-            query["WHERE"] = object;
+            const notBox = con[conToCheck].children[0].childNodes[1];
+            if (notBox.children[0].defaultChecked === true) {
+                let notObj = {}
+                notObj["NOT"] = object;
+                query["WHERE"] = notObj;
+            } else {
+                query["WHERE"] = object;
+            }
         }
     } else {
         query["WHERE"] = {};
@@ -158,16 +161,30 @@ CampusExplorer.buildQuery = () => {
             allOption.push(c);
         }
     }
-    if (allOption.length > 0 && document.getElementById("courses-order").checked === true) {
-        let c2Order = {};
-        c2Order["dir"] = "DOWN";
-        c2Order["keys"] = allOption;
-        optionsObj["ORDER"] = c2Order;
-    } else if (allOption.length > 0 && document.getElementById("courses-order").checked === false) {
-        let c2Order = {};
-        c2Order["dir"] = "UP";
-        c2Order["keys"] = allOption;
-        optionsObj["ORDER"] = c2Order;
+    if (type === "courses") {
+        if (allOption.length > 0 && document.getElementById("courses-order").checked === true) {
+            let c2Order = {};
+            c2Order["dir"] = "DOWN";
+            c2Order["keys"] = allOption;
+            optionsObj["ORDER"] = c2Order;
+        } else if (allOption.length > 0 && document.getElementById("courses-order").checked === false) {
+            let c2Order = {};
+            c2Order["dir"] = "UP";
+            c2Order["keys"] = allOption;
+            optionsObj["ORDER"] = c2Order;
+        }
+    } else {
+        if (allOption.length > 0 && document.getElementById("rooms-order").checked === true) {
+            let c2Order = {};
+            c2Order["dir"] = "DOWN";
+            c2Order["keys"] = allOption;
+            optionsObj["ORDER"] = c2Order;
+        } else if (allOption.length > 0 && document.getElementById("rooms-order").checked === false) {
+            let c2Order = {};
+            c2Order["dir"] = "UP";
+            c2Order["keys"] = allOption;
+            optionsObj["ORDER"] = c2Order;
+        }
     }
     query["OPTIONS"] = optionsObj;
     const transformBox = document.getElementsByClassName("transformations-container");

@@ -21,11 +21,6 @@ describe("Facade D3", function () {
     });
 
     after(function () {
-        server.stop().then((p) => {
-            Log.trace("message1");
-        }).catch((err) => {
-            Log.trace("message");
-        });
         // TODO: stop server here once!
     });
 
@@ -38,26 +33,26 @@ describe("Facade D3", function () {
     });
 
     // Sample on how to format PUT requests
-
-    // it("PUT test for courses dataset", function () {
-    //     try {
-    //         return chai.request("http://localhost:4321/dataset/mycourses/courses")
-    //             .put("dataset/mycourses/courses")
-    //             .send("./test/data/courses")
-    //             .set("Content-Type", "application/x-zip-compressed")
-    //             .then(function (res: Response) {
-    //                 // some logging here please!
-    //                 expect(res.status).to.be.equal(204);
-    //             })
-    //             .catch(function (err) {
-    //                 // some logging here please!
-    //                 expect.fail();
-    //             });
-    //     } catch (err) {
-    //         // and some more logging here!
-    //     }
-    // });
-
+    /*
+    it("PUT test for courses dataset", function () {
+        try {
+            return chai.request("http://localhost:4321/dataset/mycourses/courses")
+                .put("dataset/mycourses/courses")
+                .send("./test/data/courses")
+                .set("Content-Type", "application/x-zip-compressed")
+                .then(function (res: Response) {
+                    // some logging here please!
+                    expect(res.status).to.be.equal(204);
+                })
+                .catch(function (err) {
+                    // some logging here please!
+                    expect.fail();
+                });
+        } catch (err) {
+            // and some more logging here!
+        }
+    });
+    */
 
     // The other endpoints work similarly. You should be able to find all instructions at the chai-http documentation
 });
