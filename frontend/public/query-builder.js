@@ -147,10 +147,15 @@ CampusExplorer.buildQuery = () => {
     const order = document.getElementsByClassName("control order fields");
     const o = order[conToCheck];
     for (let i = 0; i < o.childNodes[1].length; i++) {
-        if (o.childNodes[1][i].defaultSelected === true) {
+        if (o.childNodes[1][i].className === "" &&
+            o.childNodes[1][i].defaultSelected === true) {
             let actualO = fieldMapping(o.childNodes[1][i].label);
             let oComplete = type + "_" + actualO;
             allOption.push(oComplete);
+        } else if (o.childNodes[1][i].className === "transformation" &&
+            o.childNodes[1][i].defaultSelected === true) {
+            let c = o.childNodes[1][i].label;
+            allOption.push(c);
         }
     }
     if (allOption.length > 0 && document.getElementById("courses-order").checked === true) {
