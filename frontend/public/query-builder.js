@@ -227,7 +227,7 @@ CampusExplorer.buildQuery = () => {
         transformObj["GROUP"] = allGroup;
         transformObj["APPLY"] = applyObj;
         query["TRANSFORMATIONS"] = transformObj;
-    }
+    } //
     return query;
 };
 
