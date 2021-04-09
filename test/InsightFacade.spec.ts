@@ -41,7 +41,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         someValid: "./test/data/someValid.zip",
         textOnly: "./test/data/textOnly.zip",
         oneJSON: "./test/data/oneJSON.zip",
-        // notZip: "./test/data/notZip.txt",
+        notZip: "./test/data/notZip.txt",
         justOneSection: "./test/data/justOneSection.zip",
     };
     let datasets: { [id: string]: string } = {};
@@ -295,15 +295,15 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     });
 
     // rejects because it is a text file not a zip file
-    /*    it("Should reject because it is a text file not a zip file", function () {
-            const id: string = "notZip";
-            const futureResult: Promise<string[]> = insightFacade.addDataset(
-                id,
-                datasets[id],
-                InsightDatasetKind.Courses,
-            );
-            return expect(futureResult).to.be.rejectedWith(InsightError);
-        });*/
+    it("Should reject because it is a text file not a zip file", function () {
+        const id: string = "notZip";
+        const futureResult: Promise<string[]> = insightFacade.addDataset(
+            id,
+            datasets[id],
+            InsightDatasetKind.Courses,
+        );
+        return expect(futureResult).to.be.rejectedWith(InsightError);
+    });
 
     // successfully removes a dataset
     it("Should remove a valid dataset", function () {

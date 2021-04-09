@@ -25,6 +25,8 @@ export default class AddCourse {
                     files.push(id);
                     resolve(files);
                 });
+            }).catch(() => {
+                reject(new InsightError("file load fail"));
             });
         });
     }
