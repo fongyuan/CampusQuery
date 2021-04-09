@@ -31,6 +31,7 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
     // automatically be loaded in the 'before' hook.
     const datasetsToLoad: { [id: string]: string } = {
         courses: "./test/data/courses.zip",
+        coursesAndWhitespace: "./test/data/courses test.zip",
         rooms: "./test/data/rooms.zip",
         noIndex: "./test/data/noIndex.zip",
         missingBuilding: "./test/data/missingBuilding.zip",
@@ -97,6 +98,18 @@ describe("InsightFacade Add/Remove/List Dataset", function () {
         const futureResult: Promise<string[]> = insightFacade.addDataset(
             id,
             datasets[id],
+            InsightDatasetKind.Courses,
+        );
+        return expect(futureResult).to.eventually.deep.equal(expected);
+    });
+
+    it("Should add a valid dataset with whitespace in name", function () {
+        const id: string = " courses test ";
+        const load: string = "coursesAndWhitespace";
+        const expected: string[] = [id];
+        const futureResult: Promise<string[]> = insightFacade.addDataset(
+            id,
+            datasets[load],
             InsightDatasetKind.Courses,
         );
         return expect(futureResult).to.eventually.deep.equal(expected);

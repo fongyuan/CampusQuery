@@ -103,7 +103,8 @@ export default class InsightFacade implements IInsightFacade {
         if (id === "") {
             return false;
         }
-        if (/\s/.test(id)) {
+        // regex from https://stackoverflow.com/questions/51731003/typescript-object-key-name-containing-spaces
+        if (/^\s+$/.test(id)) {
             return false;
         }
         if (/\_/.test(id)) {
